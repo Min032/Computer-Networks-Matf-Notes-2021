@@ -1,9 +1,7 @@
 # Computer Networks Notes 
 
-**Course**: Computer Networks
+Course: **Computer Networks** <br>
+Language: **Serbian** <br>
 
-**Language**: Serbian
-
-**Faculty of Mathematics, University of Belgrade**
-
+**Faculty of Mathematics, University of Belgrade** <br>
 **February 2021**
