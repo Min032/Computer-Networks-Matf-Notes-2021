@@ -5,22 +5,36 @@ Februar 2021.
 Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i prezentacija.
 ```
 
-- [Počeci, širenje](#počeci-širenje)
-- [O računarskim mrežama](#o-računarskim-mrežama)
-- [Primeri upotreba mreža](#primeri-upotreba-mreža)
-- [Komunikacija](#komunikacija)
-- [1. Komponente mreže, tipovi veza, primeri mreža, mreže prema dimenziji, međumreže](#1-komponente-mreže-tipovi-veza-primeri-mreža-mreže-prema-dimenziji-međumreže)
-    - [Komponente mreže](#komponente-mreže)
-    - [Tipovi veze](#tipovi-veze)
-    - [Primeri mreža](#primeri-mreža)
-    - [Podela prema dimenziji](#podela-prema-dimenziji)
-- [Mreža-aplikacija interfejs](#mreža-aplikacija-interfejs)
-- [2. Protokoli i slojevi](#2-protokoli-i-slojevi)
-- [3. Referentni modeli protokola i slojeva, jedinice podataka, organizacije za standarde](#3-referentni-modeli-protokola-i-slojeva-jedinice-podataka-organizacije-za-standarde)
+- [Uvod u računarske mreže](#uvod-u-računarske-mreže)
+  - [Počeci, širenje](#počeci-širenje)
+  - [O računarskim mrežama](#o-računarskim-mrežama)
+  - [Primeri upotreba mreža](#primeri-upotreba-mreža)
+  - [Komunikacija](#komunikacija)
+  - [1. Komponente mreže, tipovi veza, primeri mreža, mreže prema dimenziji, međumreže](#1-komponente-mreže-tipovi-veza-primeri-mreža-mreže-prema-dimenziji-međumreže)
+      - [Komponente mreže](#komponente-mreže)
+      - [Tipovi veze](#tipovi-veze)
+      - [Primeri mreža](#primeri-mreža)
+      - [Podela prema dimenziji](#podela-prema-dimenziji)
+  - [Mreža-aplikacija interfejs](#mreža-aplikacija-interfejs)
+  - [2. Protokoli i slojevi](#2-protokoli-i-slojevi)
+  - [3. Referentni modeli protokola i slojeva, jedinice podataka, organizacije za standarde](#3-referentni-modeli-protokola-i-slojeva-jedinice-podataka-organizacije-za-standarde)
+      - [Referentni modeli protokola i slojeva](#referentni-modeli-protokola-i-slojeva)
+      - [Organizacije za standarde](#organizacije-za-standarde)
+      - [Jedinice podataka](#jedinice-podataka)
+- [Fizički sloj](#fizički-sloj)
+  - [4. Uloga fizičkog sloja, pojednostavljen model, kašnjenja, BDP, primeri](#4-uloga-fizičkog-sloja-pojednostavljen-model-kašnjenja-bdp-primeri)
+      - [Uloga](#uloga)
+      - [Pojednostavljen model](#pojednostavljen-model)
+      - [Kašnjenje](#kašnjenje)
+      - [Primeri računanja kašnjenja](#primeri-računanja-kašnjenja)
+      - [BDP - Bandwith-Delay Product](#bdp---bandwith-delay-product)
+      - [BDP primer](#bdp-primer)
 
 
 <div style="page-break-after: always"></div>
 
+
+# Uvod u računarske mreže 
 
 ## Počeci, širenje
 
@@ -252,9 +266,9 @@ Mane raslojavanja:
 
 ## 3. Referentni modeli protokola i slojeva, jedinice podataka, organizacije za standarde
 
-Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sloj i kako ih najbolje povezati. Referentni modeli odgovaraju na njih. Najpoznatiji referentni modeli:
+#### Referentni modeli protokola i slojeva
 
-<!--- TODO: Treba doraditi referentne modele i objasniti bolje šta koji radi --->
+Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sloj i kako ih najbolje povezati. Referentni modeli odgovaraju na njih. Najpoznatiji referentni modeli:
 
 * OSI model sa 7 slojeva - internacionalni standard za povezivanje sistema. Uticajan, ali ne i previše korišćen u praksi.
 
@@ -269,15 +283,7 @@ Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sl
 </p>
 
 
-`----------`
-
-Kako ćemo slojeve sa njihovim protokolima izučavati na kursu:
-
-<p align="center">
-  <img alt="Rm layers" width=500 src="resources/rm_layers.png"/>
-</p>
-
-`----------`
+#### Organizacije za standarde
 
 Neke poznatije organizacije koje se bave standardizacijom i protokolima:
 
@@ -288,7 +294,7 @@ Neke poznatije organizacije koje se bave standardizacijom i protokolima:
 |IETF (Internet Engineering Task Force)|Internet, aplikativni protokoli niskog nivoa|RFC 2616, HTTP/1.1, RFC 1034/1035, DNS|
 |W3C (World Wide Web Consortium)|Veb, aplikativni protokoli visokog nivoa|HTML5, CSS|
 
-Sa kojim jedinicama podataka rade slojevi?
+#### Jedinice podataka
 
 | Sloj | Jedinica | Opis |
 |------|----------|--|
@@ -298,5 +304,82 @@ Sa kojim jedinicama podataka rade slojevi?
 |Sloj veze|Okvir| Još manje... |
 |Fizički|Bit| 0 značenja|
 
-<!--- TODO: priča o habu, sviču i ruteru, dopuniti ukoliko ne pomene kasnije --->
+
+<div style="page-break-after: always"></div>
+
+
+Kako će se posmatrati hijerarhija slojeva i protokola na kursu/u skripti:
+
+<p align="center">
+  <img alt="Rm layers" width=500 src="resources/rm_layers.png"/>
+</p>
+
+<div style="page-break-after: always"></div>
+
+
+# Fizički sloj
+
+## 4. Uloga fizičkog sloja, pojednostavljen model, kašnjenja, BDP, primeri 
+
+#### Uloga
+
+Najjednostavniji opis nadležnosti fizičkog sloja je slanje bitova između dve tačke povezane komunikacionim medijumom. 
+
+Najbitnije teme koje se tiču fizičkog sloja:
+- **Karakteristike prenosnog medijuma** - električna žica, optički kabl, bežično slanje.
+- **Slanje signala** - protok, matematička pozadina, entropija, slabljenje, šum.
+- **Tehnike modulacije i multipleksiranja** - prenos signala, reprezentacija bitova, šum.
+- **Prirodna (gornja) ograničenja** - Najkvist-Šenon teorema, teorija informacija, npr. koliko bitova možemo najviše da prosledimo kroz određeni komunikacioni kanal imajući u vidu njegove fizičke karakteristike, veza između fizičkih i informacionih karakteristika, tj. između analognog i digitalnog sveta.
+
+#### Pojednostavljen model
+
+Svojstva kojima se opisuje svaki komunikacioni kanal:
+- **Protok** (ili brzina, kapacitet) - nije fizička veličina u tradicionalnom smislu, već informaciona (digitalna). Ne govori se o metrima u sekundi, već o broju bita u sekundi. Može se uspostaviti veza između informacionih veličina i fizičkog sveta, tako da je brzina vezana za neke fizičke karakteristike poput frekvencije, komunikacionog kanala, opsega frekvencija, brzine svetlosti i slično.
+- **Kašnjenje** - mora da postoji jer brzina prenosa nije beskonačna. Gornja (fizička, matematička) granica bi bila brzina svetlosti. Meri se u sekundama.
+- **Da li kanal emituje**
+- **Raspodela verovatnoća grešaka** 
+
+#### Kašnjenje
+
+Ukupno kašnjenje podrazumeva vreme potrebno da poruka stigne sa polazne adrese na ciljnu adresu, odnosno od pošiljaoca do primaoca. Kašnjenje ima dve bitne komponente:
+- **kašnjenje prenosa (transmission delay)** - vreme potrebno da se M-bitovna poruka postavi na komunikacioni kanal. Vezano je sa količinom informacija koje šaljemo i sa brzinom prenosa komunikacionog kanala. Dakle, ako imamo malu brzinu prenosa u komunikacionom kanalu, a šaljemo veliku poruku, prirodno je da će vreme trajanja prenosa biti duže. Kašnjenje prenosa računamo kao <p align="center"> <img alt="T-delay" width=350 src="resources/t-delay.png"/> </p> to jest tako što dužinu poruke (M) izraženu u bitovima (b) delimo sa brzinom komunikacionog kanala (B) izražene u bitima po sekundi (b/s). Možemo ga shvatiti kao apsorpcionu moće komunikacionog kanala, tj. koliko informacija on može da uhvati.
+- **kašnjenje propagacije (propagation delay, ping)** - vreme potrebno da bitovi prođu kroz komunikacioni kanal. Ne zavisi od brzine prenosa ili manipulacija veličinama poruka, već je inherentna karakteristika komunikacionog kanala i posledica gornje fizičke granice - brzine svetlosti. Svi moderni komunikacioni sistemi su zasnovani na elektromagnetnim talasima čija je brzina kretanja reda veličine brzine svetlosti, odnosno između <sup>2</sup>/<sub>3</sub>C i C (zavisi da li je u pitanju WiFi, optika...). Dakle, kašnjenje propagacije je neminovno i primetno je prilikom slanja na veće daljine. Računamo je kao <p align="center"> <img alt="P-delay" width=450 src="resources/p-delay.png"/> </p> gde je brzina signala u opsegu (<sup>2</sup>/<sub>3</sub>C, C)
+- **ukupno kašnjenje** dobijamo sabiranjem pomenuta dva: <p align="center"> <img alt="Delay" width=250 src="resources/delay.png"/> </p>
+  
+
+
+| Oznaka | Vrednost | Oznaka | Vrednost|
+|--------|----------|--------|---------|
+|K(ilo)|10<sup>3</sup>|m(ili)|10<sup>-3</sup>|
+|M(ega)|10<sup>6</sup>|μ(micro)|10<sup>-6</sup>|
+|G(iga)|10<sup>9</sup>|n(ano)|10<sup>-9</sup>|
+
+#### Primeri računanja kašnjenja
+
+* Dialup sa telefonskim modemom (slanje ka račuanru u istom gradu): 
+  * P = 5ms, B = 56kb/s, M = 1250B
+  * L = 5ms + (1250x8)/(56 x 10<sup>3</sup>)s = 5ms + 179ms = 184 ms
+  
+  Treba imati u vidu da se zvuk koji šaljemo telefonskim komunikacionim kanalom ne kreće brzinom zvuka, već brzinom električne struje zbog primarnog konvertovanja u promene napona radi putovanja kroz kanal.
+
+* Širokopojasna veza - kablovska ili DSL (slanje kroz državu)
+  * P = 50ms, B = 10Mb/s, M = 1250B
+  * L = 50ms + (1250x8)/(10 x 10<sup>6</sup>)s = 50ms + 1ms= 51 ms
+
+Dakle, dugačka veza ili mali protok proizvode veće kašnjenje. Obično jedna od komponenti kašnjenja (P ili T) biva dominantna. Kod Dialup-a, usko grlo je komunikacioni kanal, a kod kablovske/DSL-a je to ping. 
+
+Ono što je bitno napomenuti i imati u vidu je da se ping odnosi samo na inicijalno kašnjenje, to jest kašnjenje prvog bita koji stiže. Svi ostali bitovi koji stižu za njim imaju samo apsolutno, ali ne i relativno kašnjenje. Kod kašnjenja fajlova to nije značajno, ali u realtime sistemu jeste, npr. VoIP, video pozivi, live stream.
+
+#### BDP - Bandwith-Delay Product
+
+Predstavlja umnožak protoka i kašnjenja. Prosto rečeno - koliko smo popunili komunikacioni kanal, tj. količina podataka prisutnih na kanalu u nekom momentu. Ako bismo posmatrali podatak kao materiju, onda je ovo zapremina materije. Meri se u bitovima. Mali je za kanale u lokalnim mrežama, npr. WiFi, a veliki za "velike debele" (long fat networks, sa BDP-om većim od 10<sup>5</sup> bitova) kanale.
+
+BDP = B x D, gde je B vreme zadržavanja na komunikacionom kanalu, a D propusni opseg.
+
+#### BDP primer
+
+* Slanje od Perta do Sidneja dugačkim optičkim kanalom.
+  * B = 40Mb/s, D = 50ms 
+  * BDP = 40 x 10<sup>6</sup> x 50 x 10<sup>-3</sup>b = 2000Kb = 250KB
+  * Ovo se smatra velikim BDP-om.
 
