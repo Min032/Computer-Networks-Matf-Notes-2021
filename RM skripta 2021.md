@@ -110,7 +110,7 @@ Listovi (krajnji računari) mogu biti krajnji korisnici ili serverski računari,
 1. **Aplikacija**, korisnik - koristi mrežu (Skype, iTunes, Amazon)
 2. **Završni čvor**, računar, serverski računar, izvor, uređaj - podržava aplikaciju (laptop, mobilni telefon, dekstop računar)
 3. **Ruter** ili usmerivač, unutrašnji čvor - prosleđuje poruke između čvorova (pristupna tačka, kablovski/DSL modem)
-4. **Veza** ili kanal - spaja čvorove (žičane, bežične)
+4. **Veza** ili kanal - spaja čvorove (žične, bežične)
 
 #### Tipovi veze
 
@@ -183,7 +183,7 @@ Bitno je da server bude aktivan pre klijenta, tj. da bude aktivan u trenutku kad
 Blokirajuće komande čekaju na dešavanje i ne koriste računarske resurse.
 Kada stigne zahtev za konekciju na server, accept se odblokirava, prihvata konekciju i kao povratnu vrednost ima deskriptor konekcije u kom se nalaze informacije o klijentu koji želi da se zakači od kojih su najbitniji adresa i port. Nakon toga, server odlučuje da li prihvata tog klijenta i odbacuje zahtev za konekciju. Serveri se najčešće implementiraju višenitno kako bi prihvatao više klijenata istovremeno. 
 
-Aplikacije komuniciraju bez realne predstave šta je unutar mreže. `Tracert` komanda na GNU/Linux sistemima prikazuje putanju koju paketi prolaze od nas, pa do udaljenog računara (servera).
+Aplikacije komuniciraju bez realne predstave šta je unutar mreže. `Tracert` komanda prikazuje putanju koju paketi prolaze od nas, pa do udaljenog računara (servera).
 
 ## 2. Protokoli i slojevi
 
