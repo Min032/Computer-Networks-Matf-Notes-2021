@@ -16,6 +16,7 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
     - [Podela prema dimenziji](#podela-prema-dimenziji)
 - [Mreža-aplikacija interfejs](#mreža-aplikacija-interfejs)
 - [2. Protokoli i slojevi](#2-protokoli-i-slojevi)
+- [3. Referentni modeli protokola i slojeva, jedinice podataka, organizacije za standarde](#3-referentni-modeli-protokola-i-slojeva-jedinice-podataka-organizacije-za-standarde)
 
 
 <div style="page-break-after: always"></div>
@@ -249,7 +250,11 @@ Mane raslojavanja:
 - previše raslojavanja dovodi do više komunikacije između slojeva, što je dodatni trošak, gubi se na performansama
 - prikrivanje informacija, jer neke aplikacije možda žele da znaju stvari koje im nisu dostupne, npr. da li se podaci prenose putem kabla ili bežično
 
+## 3. Referentni modeli protokola i slojeva, jedinice podataka, organizacije za standarde
+
 Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sloj i kako ih najbolje povezati. Referentni modeli odgovaraju na njih. Najpoznatiji referentni modeli:
+
+<!--- TODO: Treba doraditi referentne modele i objasniti bolje šta koji radi --->
 
 * OSI model sa 7 slojeva - internacionalni standard za povezivanje sistema. Uticajan, ali ne i previše korišćen u praksi.
 
@@ -293,5 +298,5 @@ Sa kojim jedinicama podataka rade slojevi?
 |Sloj veze|Okvir| Još manje... |
 |Fizički|Bit| 0 značenja|
 
-<!--- Priča o habu, sviču i ruteru, dopuniti ukoliko ne pomene kasnije --->
+<!--- TODO: priča o habu, sviču i ruteru, dopuniti ukoliko ne pomene kasnije --->
 
