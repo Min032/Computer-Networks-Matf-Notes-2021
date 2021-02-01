@@ -69,14 +69,14 @@ o raspodeli upotrebnih navika tog resursa krajnjih korisnika.
 Primer su internet provajderi i korisnici u ISP mreži. Ako mreža ima protok od 100 Mbps, a svaki korisnik je aktivan samo 50% vremena, da li je zaista ova mreža može da podrži samo 20 korisnika, ili je to znatno veći broj? Pojednostavljena varijanta - imamo informacije o verovatnoći da kompletan protok bude iskorišćen. Binomnom raspodelom se može izračunati da čak i za 30 nezavisnih kosnika, šanse da će biti potrebno više od 100Mbps su i dalje jako male (2%). Dobit u ovom slučaju je 1.5x.`
 
 <p align="center">
-  <img alt="Map of internet" width=500 src="resources/binomial.png"/>
+  <img alt="Binomial" width=500 src="resources/binomial.png"/>
 </p>
 
 * **Dostavljanje sadržaja (content delivery)** - potreba da dostavimo neki nepromenljiv sadržaj većem broju korisnika. Trošak se uglavnom meri nekom funkcijom koja direktno zavisi od broja skokova sa čvora na čvor u mreži. Ako je svakoj grani dodeljena težina 1, za skokove kažemo da su hopovi. Ukoliko bi sadržaj putovao od izvora do svakog korisnika ponaosob, broj hopova je značajno veliki. Dakle, ideja je da se naprave kopije sadržaja u nekim čvorovima kako bi se smanjila dužina putanje kojom sadržaj putuje. Kako to izgleda:
 
 
 <p align="center">
-  <img alt="Map of internet" src="resources/hops.png"/>
+  <img alt="Paths" src="resources/hops.png"/>
 </p>
 
 * **Komunikacija između računara** - elektronsko poslovanje, rezervacija karata, itd. Omogućava automatsku obradu informacija nad nezavisnim sistemima.
@@ -86,7 +86,7 @@ Primer su internet provajderi i korisnici u ISP mreži. Ako mreža ima protok od
 **Vrednost povezivanja** - Metkalfov (čovek koji je osmislio Ethernet) zakon, 1980. Vrednost mreže sa N čvorova je proporcionalna vrednosti N<sup>2</sup>. Velika mreža je vrednija nego više malih sa istim ukupnim brojem čvorova, to jest, veze su te koje nose informativnost, a ne čvorovi.
 
 <p align="center">
-  <img alt="Map of internet" width=600 src="resources/networks.png"/>
+  <img alt="Network graphs" width=600 src="resources/networks.png"/>
 </p>
 
 ## 1. Komponente mreže, tipovi veza, primeri mreža, mreže prema dimenziji, međumreže
@@ -96,7 +96,7 @@ Primer su internet provajderi i korisnici u ISP mreži. Ako mreža ima protok od
 Mreže se sastoje iz čvorova, veza i aplikacija. 
 
 <p align="center">
-  <img alt="Map of internet" width=500 src="resources/network_parts1.png"/>
+  <img alt="Network components" width=500 src="resources/network_parts1.png"/>
 </p>
 
 
@@ -104,7 +104,7 @@ Listovi (krajnji računari) mogu biti krajnji korisnici ili serverski računari,
 
 
 <p align="center">
-  <img alt="Map of internet" width=500 src="resources/network_parts2.png"/>
+  <img alt="Network components" width=500 src="resources/network_parts2.png"/>
 </p>
 
 1. **Aplikacija**, korisnik - koristi mrežu (Skype, iTunes, Amazon)
@@ -177,7 +177,7 @@ Za strimove su zakačene različite metode, nesimetrične jer se prirodno klijen
 Bitno je da server bude aktivan pre klijenta, tj. da bude aktivan u trenutku kada klijent želi na njega da se zakači. Klijent inicira komunikaciju, tj. šalje se zahtev od strane klijenta, i zatim server šalje odgovor koji klijentu stiže. Veza se prekida. Ovaj proces se često dešava iterativno.
 
 <p align="center">
-  <img alt="Map of internet" width=600 src="resources/client-server.png"/>
+  <img alt="Client-server" width=600 src="resources/client-server.png"/>
 </p>
 
 Blokirajuće komande čekaju na dešavanje i ne koriste računarske resurse.
@@ -207,7 +207,23 @@ Slojevi su disjunktne grupe funkcionalnosti koje se realizuju. Potrebno je razja
 Što se protokola tiče, svaka instanca protokola komunicira virtuelno samo sa svojim parnjakom (peer) na istom sloju (!) upotrebom dogovorenih metoda. U stvarnosti, oni ne komuniciraju direktno, već svaka instanca koristi usluge (services) sloja koji je ispod.
 
 <p align="center">
-  <img alt="Map of internet" width=800 src="resources/protocols.png"/>
+  <img alt="Protocols" width=800 src="resources/protocols.png"/>
 </p>
 
 Dakle, ako pretpostavimo da X komuniciraju na nivou poruka, a Y na nivou bajtova (X su viši slojevi, Y su niži), možemo reći da instanca protokola X samo virtuelno komunicira sa svojim parnjakom. Zašto? Jer ono što se zapravo dešava je da X instanca šalje poruku svom nižem sloju (Y od instance) koji prevodi poruku u bajtove, i zatim ih šalje Y sloju parnjaka koji te bajtove prima. Parnjak se oslanja na sloj Y ispod njega, preuzima i iščitava poruku koja mu je prosleđena. Dakle, ne postoji fizička komunikacija u protokolu X, već samo u protokolu Y. Protokol Y je fizički protokol.
+
+
+Neki od primera realnih protokola:
+- HTTP na aplikativnom sloju
+- TCP na transportnom sloju
+- IP na mrežnom sloju
+- IEEE 802.11 (Wifi) na sloju veze
+
+Protokol stek je čest naziv za skup protokola u upotrebi. Npr. skup protokola koji koristi web browser na računaru koji je putem WiFi-a povezan na Internet.
+
+Mehanizam slaganja slojeva protokola: niži sloj pravi omotač oko sadržaja višeg sloja i dodaje sopstvene informacije poruci, kao slanje pošte u koverti u kom slučaju poštari nemaju pristup unutrašnjosti koverte.
+
+<p align="center">
+  <img alt="Encapsulation" width=400 src="resources/encaps.png"/>
+</p>
+
