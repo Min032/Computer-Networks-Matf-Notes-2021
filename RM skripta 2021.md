@@ -248,7 +248,48 @@ Mane raslojavanja:
 - previše raslojavanja dovodi do više komunikacije između slojeva, što je dodatni trošak, gubi se na performansama
 - prikrivanje informacija, jer neke aplikacije možda žele da znaju stvari koje im nisu dostupne, npr. da li se podaci prenose putem kabla ili bežično
 
-Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sloj i kako ih najbolje povezati. Referentni modeli odgovaraju na njih.
+Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sloj i kako ih najbolje povezati. Referentni modeli odgovaraju na njih. Najpoznatiji referentni modeli:
+
+* OSI model sa 7 slojeva - internacionalni standard za povezivanje sistema. Uticajan, ali ne i previše korišćen u praksi.
+
+<p align="center">
+  <img alt="OSI layers" width=400 src="resources/osi_layers.jpg"/>
+</p>
+
+* Internet (TCP/IP) model - 4 sloja, zasnovan na praksi. Poslednji sloj, tj. sloj veze grupiše funkcionalnosti tradicionalnog sloja veze i fizičkog sloja. Isprepletane su aktivnosti uređaja koji moduliraju i demoduliraju signal i mrežne kartice koja radi  detekciju i korekciju grešaka, usaglašavanje brzina slanja i primanja, itd.
+
+<p align="center">
+  <img alt="OSI vs. Internet" width=300 src="resources/osi_vs_internet.png"/>
+</p>
 
 
+`----------`
+Kako ćemo slojeve sa njihovim protokolima izučavati na kursu:
+
+<p align="center">
+  <img alt="Rm layers" width=500 src="resources/rm_layers.png"/>
+</p>
+
+`----------`
+
+Neke poznatije organizacije koje se bave standardizacijom i protokolima:
+
+| Organizacija | Oblast | Primeri standarda|
+|--------------|--------|------------------|
+|ITU (International Communication Union)|Telekomunikacije|G.992, ADSL, H.264, MPEG4|
+|IEEE (Institute of Electrical and Electronics Engineers)|Komunikacije i reprezentacije podataka|802.3,Ethernet, 802.11, WiFi|
+|IETF (Internet Engineering Task Force)|Internet, aplikativni protokoli niskog nivoa|RFC 2616, HTTP/1.1, RFC 1034/1035, DNS|
+|W3C (World Wide Web Consortium)|Veb, aplikativni protokoli visokog nivoa|HTML5, CSS|
+
+Sa kojim jedinicama podataka rade slojevi?
+
+| Sloj | Jedinica | Opis |
+|------|----------|--|
+|Aplikativni|Poruka| Predstavlja neku smislenu jedinicu za korisnika, npr. HTML sadržaj ili GET zahtev|
+|Transportni|Segment| Nemaju semantiku, potrebno ih je rekonstruisati, uklopiti, spojiti da bi se dobilo značenje|
+|Mrežni|Paket| Još manje značenja...|
+|Sloj veze|Okvir| Još manje... |
+|Fizički|Bit| 0 značenja|
+
+<!--- Priča o habu, sviču i ruteru, dopuniti ukoliko ne pomene kasnije --->
 
