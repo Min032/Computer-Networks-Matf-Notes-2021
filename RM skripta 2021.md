@@ -230,7 +230,8 @@ Mehanizam slaganja slojeva protokola: niži sloj pravi omotač oko sadržaja vi�
 Mehanizam slaganja slojeva protokola je vid enkapsulacije.
 
 `-------------` 
-`Multipleksiranje i demultipleksiranje - konfuzan deo koji prof. dr. Kartelj ima u prezentacijama, ali je preskočio da objasni na času, informacije su uzete iz drugih izvora. ---`
+
+`Multipleksiranje i demultipleksiranje - konfuzan deo koji prof. dr. Kartelj ima u prezentacijama, ali je preskočio da objasni na času, informacije su uzete iz drugih izvora.`
 
 Priprema segmenata koji se prosleđuju mrežnom sloju je proces **multipleksiranja** (kombinovanja), a njihovo primanje od strane mrežnog sloja, raspakivanje i prosleđivanje protokolima višeg sloja je **demultipleksiranje**. 
 
@@ -264,6 +265,7 @@ Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sl
 
 
 `----------`
+
 Kako ćemo slojeve sa njihovim protokolima izučavati na kursu:
 
 <p align="center">
