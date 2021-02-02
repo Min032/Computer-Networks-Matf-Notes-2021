@@ -34,6 +34,8 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
       - [Žičani komunikacioni medijumi](#žičani-komunikacioni-medijumi)
       - [Optički komunikacioni medijumi](#optički-komunikacioni-medijumi)
   - [6. Bežični komunikacioni medijumi](#6-bežični-komunikacioni-medijumi)
+  - [Bežične ili žičane komunikacije - šta koristiti?](#bežične-ili-žičane-komunikacije---šta-koristiti)
+  - [Komunikacioni sateliti](#komunikacioni-sateliti)
 
 
 <div style="page-break-after: always"></div>
@@ -442,3 +444,65 @@ Dva tipa vlakana:
 Sistem za zaštitu prekookeanskih kablova je skup i komplikovan. Uglavnom je moguća autodijagnostika i reparacija, ali često je potrebno i doći i popraviti. Na slici se vidi da kablova ima dosta, ali ih je ipak teško provući kroz neke države iz političkih razloga - npr. kroz države Afrike. Kako su prekookeanski jako skupi, kompanije koje su ih provukle skupo naplaćuju saobraćaj koji kroz njih teče. Novac počinje od malih korisnika, odlazi do malih internet provajdera, oni plaćaju putarine npr. evropskim provajderima.
 
 ## 6. Bežični komunikacioni medijumi
+
+Potpuno drugačiji od žičanih. Usmerena bežična komunikacija su laseri, veoma efikasni
+
+Na računarskim mrežama, ipak, govorimo o neusmerenom bežičnom prenosu - pošiljalac emituje signal kroz prostor u svim pravcima, potencijalno veliki broj primalaca. 
+
+**Elektromagnetni spektar** - spektar elektromagnetnih talasa u rastućem poretku prema frekvenciji. Generalno značajan opseg je između 10<sup>4</sup> i 10<sup>16</sup>, a za mreže su najznačajniji WiFi, 3G, 4G, 5G.
+
+X zraci i gama zraci bi potencijalno mogli da budu sjajni prenosnici, ali su jako štetni.
+
+<p align="center"> <img alt="Em" width=500 src="resources/em.png"/> </p>
+
+Iz komercijalnog aspekta, većina frekvencija su već licencirane/dodeljene na upotrebu, i to se radi pažljivo kako ne bi došlo do mešanja signala. Velika je potražnja i često se prodaju na aukcijama za najveće ponude. 
+
+<p align="center"> <img alt="Em" width=900 src="resources/spectrum_management.png"/> </p>
+
+Postoje i neke nedodeljeni delovi spektra (bendovi) koji nisu licencirani, što znači da ljudi mogu da ih koriste za svoje namene. To je najčešće komunikacija 2G, 3G, 4G, 5G, WiFi mrežama.
+
+<p align="center"> <img alt="Em" width=700 src="resources/bands.png"/> </p>
+
+
+**Radiotalasi**
+
+Iz aspekta računarskih mreža ne preterano bitni, imaju mali prenosni kapacitet koji je korelisan sa opsegom frekvencija koji je moguć. Mogu da prolaze kroz zgrade, ali im signal slabi iz raznih razloga, biva apsorbovan, zbog odbijanja, itd.
+
+Dva podtipa:
+
+1. zemaljski - imaju niže frekvencije i antene bi za njih trebalo da se postavljaju tako da pokrivaju određeno područje i svojim pozicijama prate zakrivljenost zemlje.
+<p align="center"> <img alt="Em" width=300 src="resources/ground_waves.png"/> </p>
+
+2. nezemaljski - više frekvencije, antene se usmeravaju prema jonosferi tako da se talasi odbijaju od nje. Koriste se da šalju signale na veće udaljenosti.
+<p align="center"> <img alt="Em" width=300 src="resources/non_ground_waves.png"/> </p>
+
+
+**Mikrotalasi**
+
+Najznačiji za računarske mreže. Imaju veliki frekventni opseg i koriste se često za zatvorene namene poput WiFi, kao i za otvorene poput 3G i satelite. Signal slabi i reflektuje se od objekata iz okruženja. Jačina varira zbog udaljenosti, sabiranja signala, itd. 
+
+**Svetlost**
+
+Svetlosni signali se mogu koristiti kao komunikacioni medijum (ne misli se na optička vlakna). Svetlost je vrlo usmeren talas i ima veliki frekventni opseg (protok u elektroinženjerskom smislu). Može se iskoristiti upotrebom lasera i fotodetektora. Ovaj metod je nepouzdan jer čak i vremenske prilike, kapljice kiše npr. bi mogle da poremete odlazni ugao, i time bi podaci do fotodetektora stigli u nekoj izmenjenoj varijanti.
+
+<p align="center"> <img alt="Light" width=400 src="resources/light.png"/> </p>
+
+
+## Bežične ili žičane komunikacije - šta koristiti?
+
+Bežične:
+- jednostavne za postavljanje i jeftine
+- prirodno podržavaju mobilnost
+- prirodno podržavaju emitovanje
+- mešanje signala se mora razrešavati
+- jačina signala, pa samim tim i protok izuzetno varira
+
+Žičane/optika:
+- lako se projektuje na fiksni protok duž odabranih ruta
+- skup za postavljanje, posebno na većim udaljenostima
+- nije projektovan za mobilnosti ili emitovanje
+
+Bežične treba koristiti ukoliko postoje potrebe emitovanja, ili mobilnosti mreže. Žične ipak imaju najstabilniji protok i treba ih koristiti kad god je to moguće.
+
+## Komunikacioni sateliti
+
