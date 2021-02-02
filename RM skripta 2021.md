@@ -50,6 +50,9 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
       - [Modulacija preko nosača](#modulacija-preko-nosača)
       - [Multipleksiranje](#multipleksiranje)
   - [10. Prirodna ograničenja prenosa signala](#10-prirodna-ograničenja-prenosa-signala)
+      - [Najkvistov limit](#najkvistov-limit)
+      - [Šenonov kapacitet](#šenonov-kapacitet)
+      - [Žičane i bežične komunikacije](#žičane-i-bežične-komunikacije)
 
 
 <div style="page-break-after: always"></div>
@@ -698,4 +701,60 @@ Korisnicima se dodeljuju ključevi koji su među sobom jedinstveni i ortogonalni
 
 
 ## 10. Prirodna ograničenja prenosa signala
+
+Ograničenja su nam bitna jer želimo da znamo koliko smo dobri, odnosno koliko smo blizu krajnjih granica teorijskog protoka koji možemo da ostvarimo na osnovu fizičkih karakteristika komunikacionog medijuma. Realni sistemi su dobro realizovani ako nisu mnogo daleko od ovih ograničenja.
+
+Teorija informacija - Šenon se smatra začetnikom/osnivačem. Neki koncepti su postojali i ranije, pa su se kasnije uvrstili u tu oblast.
+
+Teoreme koje odgovaraju na pitanje - koliko često se može slati podatak kroz kanal? Odnose se na prenosni kapacitet komunikacionog medijuma, tj. određivanje njegovih informacionih karakteristika na osnovu fizičkih.
+
+* Najkvistov limit (~1924)
+* Šenonov kapacitet (1948)
+
+Ključni fizički koncepti za prenos signala:
+
+- **Protok (Bandwith, B)** - elektroinženjeri ga interpretiraju kao opseg frekvencija, tj. fizičku veličinu, a matematičari/računarci kao informacionu veličinu. Između ova dva postoji jaka veza (što je slučaj i npr. sa entropijom u matematici i termodinamici). Protok u stvari ograničava brzinu promena - frekvenciju, i to je karakteristika kanala. 
+- **Jačina signala (S)** - karakteristika primaoca. Ograničava broj razlučivih nivoa signala.
+- **Jačina šuma (N)** - karakteristika primaoca. Ograničava broj razlučivih nivoa signala (isto kao i jačina).
+
+#### Najkvistov limit
+
+Maksimalan broj promena simbola je 2B. 
+
+<p align="center"> <img alt="Najkvist" width=500 src="resources/najvkist1.png"/> </p>
+
+Ako postoji V nivoa signala (pritom ignorišemo greške, tj. šum), onda je maksimalan protok u bitima (označen sa R, informaciona veličina, biti u sekundi):
+
+<p align="center"> <img alt="Najkvist" width=200 src="resources/najkvist2.png"/> </p>
+
+Nivo signala (V) je broj varijacija signala. Na slici iznad (ovaj plavi signal) ima 2 varijacije samo, nisi i visoki napon.
+
+Dakle, po Najkvistovoj teoremi, u datom trenutku je moguće preneti najviše log<sub>2</sub> V, što znači da u jednom momentu datim nivoom prenosimo jedan bit informacija. Da smo npr. imali 4 nivoa napona, imali bismo dva bita informacija. Jasno je da na formulu utiče logaritamski.
+
+Drugi deo formule (2B) se odnosi na opseg frekvencija i on je direktno proporcionalan protoku, što je veća frekvencija to je veći prenos u bitima. 
+
+#### Šenonov kapacitet
+
+Bliži realnosti od Najkvista. Kod Najkvista ga broj razlučivih nivoa signala pretpostavljamo, a ovde ga računamo.
+
+Broj razlučivih nivoa signala zavisi od odnosa jačine signala i jačine šuma S/N, što je logično. Veći šum - otežana rekonstrukcija podataka. Odnos signala i šuma (SNR) može jako da varira i iz tog razloga se koristi logaritamska skala. SNR se meri u decibelima:
+
+**SNR<sub>dB</sub> = 10 log <sub>10</sub> (S/N)**
+
+
+Znači za 10dB odnos signala i šuma je 10, što je solidno loše, šum je jako prisutan. Za 20dB odnos signala i šuma je deset puta bolji od 10dB, za 30dB sto puta... itd.
+
+Formula za Šenonov kapacitet:
+
+<p align="center"> <img alt="Shenon" width=250 src="resources/shenon.png"/> </p>
+
+Broj razlučivih signala se dobija iz odnosa: (S + N)/N = 1 + S/N , što zaista zavisi od karakteristika komunikacionog medijuma, za razliku od Najkvista.
+
+
+#### Žičane i bežične komunikacije
+
+- **Žice i optika** - mogu se projektovati ciljni SNR i B, samim tim je i ciljni prenos u b/s. Tj. na osnovu fizičkih karakteristika se planira protok.
+- **Bežični kanali** - vrlo neizvesni kad su u pitanju planirani protoci, SNR varira zbog raznih faktora, npr. prepreka, atmosferskih prilika i sl. Nije isplativo projektovati za najgori slučaj, već se mora "živeti" sa visokim varijacijama prenosa.
+
+
 
