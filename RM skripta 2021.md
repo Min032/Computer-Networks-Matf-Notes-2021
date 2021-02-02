@@ -29,6 +29,11 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
       - [Primeri računanja kašnjenja](#primeri-računanja-kašnjenja)
       - [BDP - Bandwith-Delay Product](#bdp---bandwith-delay-product)
       - [BDP primer](#bdp-primer)
+  - [5. (Žičani i optički) komunikacioni medijumi](#5-žičani-i-optički-komunikacioni-medijumi)
+      - [Uvod](#uvod)
+      - [Žičani komunikacioni medijumi](#žičani-komunikacioni-medijumi)
+      - [Optički komunikacioni medijumi](#optički-komunikacioni-medijumi)
+  - [6. Bežični komunikacioni medijumi](#6-bežični-komunikacioni-medijumi)
 
 
 <div style="page-break-after: always"></div>
@@ -383,3 +388,57 @@ BDP = B x D, gde je B vreme zadržavanja na komunikacionom kanalu, a D propusni 
   * BDP = 40 x 10<sup>6</sup> x 50 x 10<sup>-3</sup>b = 2000Kb = 250KB
   * Ovo se smatra velikim BDP-om.
 
+## 5. (Žičani i optički) komunikacioni medijumi
+
+#### Uvod
+
+Medijum propagira signal sa informacijama u vidu bitova. Tri osnovna tipa:
+- žičani
+- optički (kablovi)
+- bežični
+
+Žičani i optički su samo naizgled slični, ali suština im je potpuno različita i bitno ih je izdvojiti u zasebne tipove. 
+
+Četvrti tip je tip koji podrazumeva fizički transport memorija na kojima se nalaze podaci (slanje diskova poštom, transport kamionom :D). Kutija sa 1000 diskova od po 800Gb se može isporučiti za jedan dan (86400s). Protok je, dakle, oko 70 Gb/s, što će jako teško ostvariti bilo koja mreža. Dobre strane su pouzdanost, cena. Problem je pre svega ping, koji je ovom slučaju kašnjenje od 86400s, što niko ne želi.
+
+#### Žičani komunikacioni medijumi
+
+Zasnovani na prenosu jedne varijante elektromagnetnog talasa, tj. prenosu električne struje manjih i većih frekvencija.
+
+1. **Upredena parica (UTP - unshielded twisted pair)** - veoma čest, koristi se za LAN kablove i kod telefonskih linija. Inicijalno bio zamišljen kao komunikacioni medijum za prenos telefonskog signala u doba ekspanzije fiksne telefonije, ali su vremenom unapređivane tako da podržavaju i prenos podataka. Zapravo je i prva pomenuta mreža (početak skripte, Darpa priča) koristila upredene parice. Vremenom su i kompanije koje pružaju usluge fiksne telefonije polako počele da se bave i pružanjem usluga Interneta. Tako nastaje ADSL. 
+Upredene parice su izuvrtane (zbog umanjivanja smetnji) bakarne žice za izolacionim slojem okolo, sve zajedno obložene još jednim, glavnim izolacionim slojem. UTP kabl kategorije 5 sa 4 upredena para:
+<p align="center"> <img alt="UTP" width=400 src="resources/utp_cable.jpg"/> </p>
+
+2. **Koaksijalni kabl** - dosta veći prenosni kapacitet i bolje performanse. Nastao u doba ekspanzije kablovske televizije, za čiji se prenos primarno koristio. Inicijalno, po svom dizajnu su imali manje smetnji i bili sjajni u prenosu video signala, samim tim su i imali veliki propusni opseg. Koristi se i danas.
+U sredini je deblja bakarna žica, oko nje izolacioni materijal, oko njega metalna mrežica koja, poput faradejevog kaveza, služi da spreči spoljne signale da ulaze unutra i da spreči kretanje signala u suprotnom smeru. Oko nje je još jedna izolaciona plastična opna.
+<p align="center"> <img alt="Coaxial" width=200 src="resources/coaxial_cable.jpg"/> </p>
+
+3. **Električne žice za prevođenje struje** - praktičan za upotrebu i skoro svuda je već instaliran (retko koje mesto na svetu gde ljudi žive nema struju :D). Loš je u svim ostalim aspektima. Dizajn samih žica nije povoljan po prenos podataka - imaju ogroman šum, puno grešaka. Ali, čak i kroz nepouzdan komunikacioni medijum moguće je pouzdano prenositi podatke, ne u tehnološkom smislu, već je moguće nadomestiti ove nedostatke na logičkom nivou, npr. tako što će se slati redudantni podaci na osnovu kojih će se sa druge strane oni rekonstruisati u ispravno stanje.
+<p align="center"> <img alt="Electric" width=200 src="resources/electric_cable.jpg"/> </p>
+
+#### Optički komunikacioni medijumi
+
+Liče spolja na žičane, ali su potpuno drugačiji. Optička vlakna su dugačka, tanka i čista vlakna stakla. Tehnološki proces pravljenja optičkih kablova je katastrofalno komplikovan i znatno su skuplji u odnosu na ostale. Ono što je poželjno kod njih i zbog čega su danas dominantni su sjajne performanse po pitanju protoka (zbog velikog opsega frekvencija) i kašnjenja.
+Prenos podataka se vrši tako što sa strane pošiljaoca imamo izvor svetlosti, ta svetlost se propušta kroz optičko vlakno. Unutra je ona zarobljena i kreće se, pravolinijski i udara u zidove. Sa suprotne strane postoji fotodetektor, tj. inverzni mehanizam koji kodiranu svetlost dekodira i prebacuje nazad u podatke.
+<p align="center"> <img alt="Optic" width=600 src="resources/optic_travel.png"/> </p>
+Postoje i određeni gubici - ako se koriste za velike udaljenosti, na određene pozicije postavljaju se pojačivači koji stanje podataka vraćaju na originalno, ili blisko originalnom stanju.
+Dva tipa vlakana:
+
+
+1. Višemodalno vlakno - jeftinije, kraće dužine. Obično se dovodi do krajnjih korisnika. Svetlost se sudara sa zidovima.
+2. Unimodalno - skuplje, dužine do 100km. Jako tanko, svetlost praktično ide pravo, ali je nezgodno postaviti ga.
+
+
+Česta je praksa da se vlakna pakuju, pogotovo kada se optičkim kablovima povezuju međusobno gradovi.
+
+<p align="center"> <img alt="Optic" width=500 src="resources/optic_fiber.png"/> </p>
+
+<p align="center"> <img alt="Optic" width=350 src="resources/optic_cable.png"/> </p>
+
+2007. godina, sve najbitniji putevi komunikacije su optika, uključujući i veze između svih kontinenata, a i one preko okeana:
+
+<p align="center"> <img alt="Optic" width=400 src="resources/global_optic_state.png"/> </p>
+
+Sistem za zaštitu prekookeanskih kablova je skup i komplikovan. Uglavnom je moguća autodijagnostika i reparacija, ali često je potrebno i doći i popraviti. Na slici se vidi da kablova ima dosta, ali ih je ipak teško provući kroz neke države iz političkih razloga - npr. kroz države Afrike. Kako su prekookeanski jako skupi, kompanije koje su ih provukle skupo naplaćuju saobraćaj koji kroz njih teče. Novac počinje od malih korisnika, odlazi do malih internet provajdera, oni plaćaju putarine npr. evropskim provajderima.
+
+## 6. Bežični komunikacioni medijumi
