@@ -36,6 +36,9 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
   - [6. Bežični komunikacioni medijumi](#6-bežični-komunikacioni-medijumi)
   - [Bežične ili žičane komunikacije - šta koristiti?](#bežične-ili-žičane-komunikacije---šta-koristiti)
   - [Komunikacioni sateliti](#komunikacioni-sateliti)
+      - [Geostacionirani sateliti](#geostacionirani-sateliti)
+      - [Nisko-orbitni sateliti](#nisko-orbitni-sateliti)
+      - [Satelit ili optika?](#satelit-ili-optika)
 
 
 <div style="page-break-after: always"></div>
@@ -505,4 +508,40 @@ Bežične:
 Bežične treba koristiti ukoliko postoje potrebe emitovanja, ili mobilnosti mreže. Žične ipak imaju najstabilniji protok i treba ih koristiti kad god je to moguće.
 
 ## Komunikacioni sateliti
+
+Sateliti su efikasni za emitovanja i komunikaciju bilo kada i bilo gde. Dakle, primarna upotreba je za emitovanje, a ne za slanje podataka između dve tačke. Tipovi satelita:
+
+1. Geostacionarni (GEO) 
+2. Srednje-orbitni (MEO) 
+3. Nisko-orbitni (LEO)
+
+Sats needed je koliko je potrebno tih satelita da bi se pokrila zemljina kora:
+
+<p align="center"> <img alt="Sats" width=400 src="resources/satellites.png"/> </p>
+
+
+#### Geostacionirani sateliti
+
+Značajno drugačiji od druga dva tipa. Obično se postavlja na visine oko 35000km, što je poprilično daleko od Zemljine površine. Ima istu ugaonu brzinu kretanja kao i Zemlja. Drugim rečima, pomera se za isti ugao u jedinici vremena, što znači da će u datom momentu kada se postavi u odgovarajuću poziciju uvek biti iznad iste tačke na Zemlji. Druga dva tipa nemaju ovu sposobnost, već mora da postoji mreža koordinisanih satelita kako bi se pokrila određena površina.
+
+Da bi se sateliti ispravno koristili, potrebno je da postoji nešto što satelitu šalje informaciju, a satelit se onda ponaša kao relej - reflektuje tu informaciju ka drugim prijemnicima. Primer za ovo su satelitske televizije - RTS usmerava svoju antenu (mikrostanicu) prema satelitu, koja je otpremnik signala. Satelit emituje taj signal određenom području koji zemaljska antena ne bi mogla da obuhvati. Antene (mikrostanice) primaju signal nazad. Često se koriste centralni uređaji - habovi, koji su u stvari zemaljske antene visokog učinka i služe da olakšaju komunikaciju između običnih antena (mikrostanica) i satelite, a i između mikrostanica međusobno. 
+
+<p align="center"> <img alt="Geo" width=250 src="resources/geo.png"/> </p>
+
+
+#### Nisko-orbitni sateliti
+
+Nisu geostacionirani, ali ako ih ima više, mogu da garantuju stalnu pokrivenost na odabranim regijama. Imaju brži odziv u odnosu na GEO, jer su bliži Zemlji.
+
+#### Satelit ili optika?
+
+Satelit:
+- nakon lansiranja satelita, komunikacija se može brzo uspostaviti bilo gde i bilo kada
+- emitovanje na velika područja
+- ograničeni protok i mešanje signala
+
+Optika:
+- ogroman protok duž velikih udaljenosti
+- instalacija skupa i komplikovana
+
 
