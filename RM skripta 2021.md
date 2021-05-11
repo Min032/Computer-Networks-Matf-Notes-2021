@@ -60,12 +60,13 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
   - [12. Sloj veze, uloga, komunikacija sa slojem ispod i iznad, kratko objašnjenje spiska aktivnosti na sloju veze](#12-sloj-veze-uloga-komunikacija-sa-slojem-ispod-i-iznad-kratko-objašnjenje-spiska-aktivnosti-na-sloju-veze)
   - [13. Uokvirivanje u sloju veze](#13-uokvirivanje-u-sloju-veze)
   - [14. Kodiranje grešaka u sloju veze](#14-kodiranje-grešaka-u-sloju-veze)
-      - [Pristup - dodavanje redudantnosti](#pristup---dodavanje-redudantnosti)
+      - [Pristup - dodavanje redundantnosti](#pristup---dodavanje-redundantnosti)
       - [Hamingovo rastojanje](#hamingovo-rastojanje)
   - [15. Detekcija grešaka u sloju veze](#15-detekcija-grešaka-u-sloju-veze)
       - [Provera parnosti](#provera-parnosti)
       - [Kontrolni zbirovi](#kontrolni-zbirovi)
-      - [Ciklička provera redu(n?)danse (CRC)](#ciklička-provera-redundanse-crc)
+      - [Ciklička provera redundanse (CRC)](#ciklička-provera-redundanse-crc)
+  - [16. Korekcija grešaka u sloju veze](#16-korekcija-grešaka-u-sloju-veze)
 
 
 <div style="page-break-after: always"></div>
@@ -83,7 +84,7 @@ Ideja novog sistema nije bila previše deterministička - grafovi komunikacije n
   <img alt="Map of internet" width=500 src="resources/internet_map.jpg"/>
 </p>
 
-Na slici iznad je površna ilustracija izgleda Internet mreže 2005. godine. Ono što je jasno je da izgleda poprilično haotično i puna redudantnosti - što za nas znači da je razbijanje mreže na više delova presecanjem komunikacija značajno teže. Čvorovi koji deluju izolovaniji i manje povezani sa ostalima nisu nužno loše isplanirani - već su pre čvorovi koji pripadaju nekim vladinim organizacijama, vojsci, itd. Ovakvi čvorovi često imaju sisteme nezavisne komunikacije i za njih je bitno da budu i fizički udaljeni od ostalih, pored korišćenja drugačijih softvera i sistema enkripcije i zaštite.
+Na slici iznad je površna ilustracija izgleda Internet mreže 2005. godine. Ono što je jasno je da izgleda poprilično haotično i puna redundantnosti - što za nas znači da je razbijanje mreže na više delova presecanjem komunikacija značajno teže. Čvorovi koji deluju izolovaniji i manje povezani sa ostalima nisu nužno loše isplanirani - već su pre čvorovi koji pripadaju nekim vladinim organizacijama, vojsci, itd. Ovakvi čvorovi često imaju sisteme nezavisne komunikacije i za njih je bitno da budu i fizički udaljeni od ostalih, pored korišćenja drugačijih softvera i sistema enkripcije i zaštite.
 
 
 ## O računarskim mrežama
@@ -445,7 +446,7 @@ Upredene parice su izuvrtane (zbog umanjivanja smetnji) bakarne žice za izolaci
 U sredini je deblja bakarna žica, oko nje izolacioni materijal, oko njega metalna mrežica koja, poput faradejevog kaveza, služi da spreči spoljne signale da ulaze unutra i da spreči kretanje signala u suprotnom smeru. Oko nje je još jedna izolaciona plastična opna.
 <p align="center"> <img alt="Coaxial" width=200 src="resources/coaxial_cable.jpg"/> </p>
 
-3. **Električne žice za prevođenje struje** - praktičan za upotrebu i skoro svuda je već instaliran (retko koje mesto na svetu gde ljudi žive nema struju :D). Loš je u svim ostalim aspektima. Dizajn samih žica nije povoljan po prenos podataka - imaju ogroman šum, puno grešaka. Ali, čak i kroz nepouzdan komunikacioni medijum moguće je pouzdano prenositi podatke, ne u tehnološkom smislu, već je moguće nadomestiti ove nedostatke na logičkom nivou, npr. tako što će se slati redudantni podaci na osnovu kojih će se sa druge strane oni rekonstruisati u ispravno stanje.
+3. **Električne žice za prevođenje struje** - praktičan za upotrebu i skoro svuda je već instaliran (retko koje mesto na svetu gde ljudi žive nema struju :D). Loš je u svim ostalim aspektima. Dizajn samih žica nije povoljan po prenos podataka - imaju ogroman šum, puno grešaka. Ali, čak i kroz nepouzdan komunikacioni medijum moguće je pouzdano prenositi podatke, ne u tehnološkom smislu, već je moguće nadomestiti ove nedostatke na logičkom nivou, npr. tako što će se slati redundantni podaci na osnovu kojih će se sa druge strane oni rekonstruisati u ispravno stanje.
 <p align="center"> <img alt="Electric" width=200 src="resources/electric_cable.jpg"/> </p>
 
 #### Optički komunikacioni medijumi
@@ -652,7 +653,7 @@ Bitovi se sa druge strane prevode na osnovu tabele kodiranja (ovo ne treba da se
 
 <p align="center"> <img alt="4b5b" width=80 src="resources/4b5b.png"/> </p>
 
-Posledica korišćenja ove šeme je manja iskoriščenost - imamo jedan bit redudantnosti, dakle iskorišćenost je 80%.
+Posledica korišćenja ove šeme je manja iskoriščenost - imamo jedan bit redundantnosti, dakle iskorišćenost je 80%.
 
 #### Modulacija preko nosača
 
@@ -843,7 +844,7 @@ Dakle, sloj veze od fizičkog sloja dobija tok bitova za koji nije jasno gde nek
 
 ## 13. Uokvirivanje u sloju veze
 
-Neophodno jer se detekcija i korekcija grešaka ne isplate nad pojedinačnim bitovima, a i retransmisija nije moguća nad tokom podataka. Uokvirivanjem pravimo kompromis između efikasnosti transfera i stepena redudantnosti podataka za slučaj greške. Npr. ako imamo jako veliku dužinu okvira, veće su šanse i za grešku (raspodela grešaka zavisi od vremenskog intervala, a vreme slanja je duže sve što je poruka duža), pa će se često raditi i transmisija, tj. ponovno slanje tog ogromnog okvira. Sa druge strane, ako izaberemo prekratak okvir, imaćemo problem sa efikasnošću detekcije i korekcije grešaka zbog prevelikog udela metapodataka u onome što šaljemo.
+Neophodno jer se detekcija i korekcija grešaka ne isplate nad pojedinačnim bitovima, a i retransmisija nije moguća nad tokom podataka. Uokvirivanjem pravimo kompromis između efikasnosti transfera i stepena redundantnosti podataka za slučaj greške. Npr. ako imamo jako veliku dužinu okvira, veće su šanse i za grešku (raspodela grešaka zavisi od vremenskog intervala, a vreme slanja je duže sve što je poruka duža), pa će se često raditi i transmisija, tj. ponovno slanje tog ogromnog okvira. Sa druge strane, ako izaberemo prekratak okvir, imaćemo problem sa efikasnošću detekcije i korekcije grešaka zbog prevelikog udela metapodataka u onome što šaljemo.
 
 Standardni pristupi uokvirivanja:
 1. Brojanje bajtova (samo motivacioni)
@@ -880,16 +881,16 @@ Načini poboljšanja pouzdanosti prenosa:
 1. Tehnička poboljšanja komunikacione opreme - loše strane: računarci se ne bave komunikacionom opremom uglavnom, a i postoje situacije gde je šum na tom polju neizbežan, npr. varničenje
 2. Logička poboljšanja komunikacione opreme - elegantniji način, vrši se i na hardverskom i na softverskom nivou, tj. bitno je naglasiti da logički ne znači softverski. Ne unapređujemo fizičke karakteristike već ih rekonstruišemo/popravljamo logički. Na hardverskom nivou to uglavnom znači da implementiramo bolje/naprednije algoritme u uređaje.
 
-#### Pristup - dodavanje redudantnosti
+#### Pristup - dodavanje redundantnosti
 
-Koristi se i kod detekcije i kod korekcije grešaka. Kod detekcije je u pitanju dodavanje kontrolnih bitova koji su minimalno redudantni, tj. taman toliko veliki da se uz pomoć njih može detektovati greška pod određenim pretpostavkama o distribuciji grešaka. Kod korekcije je broj tih bitova malo veći, prirodno kod za korekciju grešaka sadrži i deo sa detekcijom, pa je i kompleksniji.
+Koristi se i kod detekcije i kod korekcije grešaka. Kod detekcije je u pitanju dodavanje kontrolnih bitova koji su minimalno redundantni, tj. taman toliko veliki da se uz pomoć njih može detektovati greška pod određenim pretpostavkama o distribuciji grešaka. Kod korekcije je broj tih bitova malo veći, prirodno kod za korekciju grešaka sadrži i deo sa detekcijom, pa je i kompleksniji.
 
-**Naivni pristup:** za svaki okvir poslati još jedan isti takav. Ako se razlikuju, došlo je do greške. Stepen redudantnosti je 50% (ili 100%, zavisi kako se posmatra, svakako se na postojeće podatke dodaje još toliko). Ovakav pristup nije preterano dobar, prvenstveno zbog stepena iskorišćenosti podataka. Koliko je moćan - jeste relativno, može se utvrditi greška sa određenim stepenom pouzdanosti na svim bitovima. Ovaj pristup se ne koristi jer nije baziran na validnoj pretpostavci, skoro nemoguća je situacija da će se desiti greška na svim bitovima u jednom okviru. 
+**Naivni pristup:** za svaki okvir poslati još jedan isti takav. Ako se razlikuju, došlo je do greške. Stepen redundantnosti je 50% (ili 100%, zavisi kako se posmatra, svakako se na postojeće podatke dodaje još toliko). Ovakav pristup nije preterano dobar, prvenstveno zbog stepena iskorišćenosti podataka. Koliko je moćan - jeste relativno, može se utvrditi greška sa određenim stepenom pouzdanosti na svim bitovima. Ovaj pristup se ne koristi jer nije baziran na validnoj pretpostavci, skoro nemoguća je situacija da će se desiti greška na svim bitovima u jednom okviru. 
 
 
-Cilj nam je u suštini da uz što manji stepen redudantnosti imamo što veću moć detekcije, tj. da što veći udeo bitova primljenih od strane primaoca koristimo kao podatke. Oblasti neophodne da se ove stvari formalno ispitaju: primenjena matematika, teorija brojeva, statistika, verovatnoća... Opšta ideja kodova za detekciju i korekciju grešaka je da ubacimo neku redudantnost u podatke, tj. pravimo neku sekvencu bitova koja ne predstavlja podatke, već metapodatak, koji se u praksi obično pravi da bude funkcija od podataka. Ono što razlikuje pametne kodove od malo manje pametnih je baš ta funkcija. I primalac i pošiljalac moraju biti svesni nje. To jest, primalac kada primi podatke on zna gde su podaci, a gde kontrolni bitovi, a zna i koju tačno funkciju je potrebno primeniti da bi se proverila validnost poruke. Dakle, primalac primenjuje tu funkciju nad podacima i proverava da li dobija istu stvar, tj. proveriće da li se primljeni kontrolni bitovi poklapaju sa onima koje je dobio primenom funkcije. Ako se ovde desila bar jedna greška, dobra funkcija će imati potpuno različite rezultate u ta dva slučaja. 
+Cilj nam je u suštini da uz što manji stepen redundantnosti imamo što veću moć detekcije, tj. da što veći udeo bitova primljenih od strane primaoca koristimo kao podatke. Oblasti neophodne da se ove stvari formalno ispitaju: primenjena matematika, teorija brojeva, statistika, verovatnoća... Opšta ideja kodova za detekciju i korekciju grešaka je da ubacimo neku redundantnost u podatke, tj. pravimo neku sekvencu bitova koja ne predstavlja podatke, već metapodatak, koji se u praksi obično pravi da bude funkcija od podataka. Ono što razlikuje pametne kodove od malo manje pametnih je baš ta funkcija. I primalac i pošiljalac moraju biti svesni nje. To jest, primalac kada primi podatke on zna gde su podaci, a gde kontrolni bitovi, a zna i koju tačno funkciju je potrebno primeniti da bi se proverila validnost poruke. Dakle, primalac primenjuje tu funkciju nad podacima i proverava da li dobija istu stvar, tj. proveriće da li se primljeni kontrolni bitovi poklapaju sa onima koje je dobio primenom funkcije. Ako se ovde desila bar jedna greška, dobra funkcija će imati potpuno različite rezultate u ta dva slučaja. 
 
-Skup validnih kodnih reči je dosta manji od skupa svih mogućih. Npr. ukoliko koristimo 3 bita za kod za korekciju, a 7 za podatke, svaka kombinacija ta dva spada u "sve kodne reči", a samo validna kombinacija spada u validnu reč. Validna kombinacija je zapravo kombinacija proizvoljnog podatka na prvih 7 bitova sa rezultatom primenjene funkcije na njega smeštenog u poslednja 3 bita. Kontrolni bitovi su jednoznačni za svaku kombinaciju bitova za podatke (?). Odnos redudantnosti u ovom slučaju je 1:8 (128:1024=2<sup>7</sup>:2<sup>10</sup>). Vrlo je mala šansa da se neka validna reč poslata od strane pošiljaoca preslika u neku drugu validnu reč koju primalac prima, što je jedini nepoželjan scenario, i scenario koji pravi ogroman problem jer primalac ne zna da primljeni podaci sadrže grešku. Zbog ovoga je bitno da funkcija redudantnosti bude pažljivo odabrana.
+Skup validnih kodnih reči je dosta manji od skupa svih mogućih. Npr. ukoliko koristimo 3 bita za kod za korekciju, a 7 za podatke, svaka kombinacija ta dva spada u "sve kodne reči", a samo validna kombinacija spada u validnu reč. Validna kombinacija je zapravo kombinacija proizvoljnog podatka na prvih 7 bitova sa rezultatom primenjene funkcije na njega smeštenog u poslednja 3 bita. Kontrolni bitovi su jednoznačni za svaku kombinaciju bitova za podatke (?). Odnos redundantnosti u ovom slučaju je 1:8 (128:1024=2<sup>7</sup>:2<sup>10</sup>). Vrlo je mala šansa da se neka validna reč poslata od strane pošiljaoca preslika u neku drugu validnu reč koju primalac prima, što je jedini nepoželjan scenario, i scenario koji pravi ogroman problem jer primalac ne zna da primljeni podaci sadrže grešku. Zbog ovoga je bitno da funkcija redundantnosti bude pažljivo odabrana.
 
 #### Hamingovo rastojanje
 
@@ -914,7 +915,7 @@ Najpoznatiji pristupi:
 
 1. Provera parnosti
 2. Kontrolni zbirovi
-3. Ciklične provere redu(n?)danse (CRC)
+3. Ciklične provere redundanse (CRC)
 
 Sam kod za detekciju ima manju moć od koda za korekciju grešaka. On može samo odgovoriti na pitanje da li se greška desila ili ne. Ukoliko dobijemo potvrdan odgovor na to da li se greška desila, ono što možemo da uradimo je da zatražimo retransmisiju, tj. ponovo slanje. To je vid indirektne popravke. Ono što ćemo kasnije videti je da se retransmisija ne traži eksplicitno, već se obavlja automatski ukoliko nema potvrde od strane primaoca. 
 
@@ -937,6 +938,116 @@ Na strani primaoca, primljeni podaci se slažu na isti način kao 16-obitne reč
 <p align="center"> <img alt="c sum" width=60 src="resources/control_sum2.png"/> </p>
 
 
-#### Ciklička provera redu(n?)danse (CRC)
+#### Ciklička provera redundanse (CRC)
 
-Složen mehanizam, naslonjen na teoriju brojeva i deljivost polinoma. Omogućava mnogo veću moć testa u poređenju sa proverom parnosti, a da ne potrošimo previše bitova. Polinomi su formirani nad nizovima bitova, tj. sekvenca bitova se smatra polinomom čiji su koeficijenti samo nule i jedinice. 
+Složen mehanizam, naslonjen na teoriju brojeva i deljivost polinoma. Omogućava mnogo veću moć testa u poređenju sa proverom parnosti, a da ne potrošimo previše bitova. Polinomi su formirani nad nizovima bitova, tj. sekvenca bitova se smatra polinomom čiji su koeficijenti samo nule i jedinice. Npr:
+
+- za 10011010 odgovarajući polinom je: x<sup>7</sup>+x<sup>4</sup>+x<sup>3</sup>+x<sup>1</sup> 
+
+Za datih `n` bitova podataka, generišemo `k` kontrolnih bitova tako da `n+k` bitova bude broj deljiv sa nekim unapred odabranim polinomom, odnosno brojem C. Broj C se naziva generator i znaju ga i pošiljalac i primalac.
+
+**Slanje podataka:**
+
+1. Proširivanje `n` bitova sa `k` nula, odnosno povećavanje polinoma tako da se doda određeni broj nula.
+2. Deljenje dobijenog podatka (proširenog polinoma) sa odabranim brojem C (određenim polinomom) kog su svesna i jedna i druga strana.
+3. Pamtimo ostatak prilikom deljenja iz prethodnog koraka (količnik nas ne zanima).
+4. Ako ostatak nije 0, onda ga dopisujemo na prošireni broj, odnosno na "prazna polja" proširenog broja (nule iz prvog koraka).
+5. Novoformirani broj će sada biti deljiv sa datim polinomom tako da smo postigli željenu stvar. Tih dopisanih `k` nula ili jedinica koje predstavljaju ostatak su sada kontrolni bitovi. 
+
+**Primanje podataka:**
+
+1. Deljenje poruke sa brojem C i provera da li je ostatak pri deljenju jednak 0.
+
+**Primer:**
+
+* Podaci: 1101011111
+* Delilac: C(x) =  x<sup>4</sup>+x<sup>1</sup>+1, C = 10011, k = 4
+* Podaci sa dodatim bitovima koji se šalju: **10011**1101011111
+* Primalac deli podatke sa brojem C, ukoliko ostatak nije 0, došlo je do greške.
+
+**Detekcija grešaka u praksi:**
+
+* U praksi se CRC detekcija grešaka često koristi. Od generatora zavisi i kvalitet detekcije (teorija brojeva i empirijska analiza). Postoje "objektivno dobri" standardizovani polinomi koji se obično koriste u praksi, npr standardni CRC-32 koristi `1 0000 0100 1100 0001 0001 1101 1011 0111`.
+* CRC se često koristi u Ethernet, 802.11, ADSL, kablovskoj...
+* Kontrolni zbir, iako lošiji, se koristi na višim slojevima: IP, TCP, UDP.
+* Provera parnosti se slabo koristi generalno.
+
+## 16. Korekcija grešaka u sloju veze
+
+Složenija od detekcije jer algoritam osim detekcije mora tu grešku i da popravi. Prirodno, u ovom slučaju retransmisija nije neophodna, jer ako se greška popravi nema razloga da se podatak ponovo šalje.
+
+Na kursu obrađujemo samo Hamingove kodove za korekciju.
+
+**Intuicija iza kodova za korekciju grešaka:**
+
+* Imamo Hamingov kod sa rastojanjem najmanje 3 (HD $\geq$ 3), dakle potrebno nam je $\geq$ 3 bitova da pređemo iz jedne validne reči u drugu. Jednobitne greške će biti bliže nekoj jedinstvenoj validnoj reči.
+* Pod pretpostavkom da se može desiti samo jednobitna greška, možemo da ispravimo reč tako što ćemo je mapirati u najbližu validnu. Znači, pristup radi ako HD $\geq$ 2d + 1, gde je d maksimalni očekivani broj jednobitnih grešaka.
+
+Cilj je da validne kodne reči po nekom prostoru mogućih reči rasporedimo tako da ih što više udaljimo, ali da ih ipak ravnomerno razbacamo, i samim tim iskoristimo što veći broj validnih reči kako bismo imali što manji stepen neiskorišćenosti. Time maksimizujemo Hamingovo rastojanje koda (detaljnije o ovome ima u objašnjenu Hamingovog rastojanja iz pitanja 14-).
+
+<p align="center"> <img alt="c sum" width=500 src="resources/haming_int.png"/> </p>
+
+Naivni pristup ovom problemu bi bio da imamo listu svih validnih kodnih reči na strani pošiljaoca i na strani primaoca, pa da se na strani primaoca za svaku proverava da li je validna, što je strašno neefikasno.
+
+**Hamingov kod za korekciju**
+
+- HD = 3, što znači da detektuje dvobitne greške, a ispravlja jednobitne
+- koristi n bitova podataka i k kontrolnih
+- veza između n i k je: n = 2<sup>k</sup>-k-1, npr. n = 4, k = 3
+- ideja je da se stavi kontrolni bit na pozicije koje su stepen dvojke: 1, 2, 4, ...
+- kontrolni bit na poziciji (i) se dalje računa kao bit parnosti za bitove čije pozicije u binarnoj reprezentaciji imaju 1 na (i)-tom mestu
+
+Primer:
+
+- podaci = 0101, potrebna su 3 kontrolna bita (pozicije 1, 2 i 4)
+- 7-bitni kod:
+  - bit 1 pokriva pozicije 1, 3, 5, 7 (1 = 0001, 3 = 0011, ...)
+  - bit 2 pokriva pozicije 2, 3, 6, 7 (2 = 0010, 3 = 0011, ...)
+  - bit 4 pokriva pozicije 4, 5, 6, 7 (1 = 0100, 5 = 0101, ...)
+- dakle, od _ _ _ _ _ _ _, na 1., 2. i 4. mestu su kontrolni bitovi, na ostalim podacima (čita se s leva)
+- krećemo od _ _ 0 _ 1 0 1
+- prvi bit pokriva samog sebe, kao i pozicije 3, 5, 7: p1 = 0+1+1 = 0
+- p2 = 0+0+1 = 1, p4 = 1+0+1 = 0
+- podatak koji se šalje je: 0 1 0 0 1 0 1
+- primalac sa suprotne strane računa da li su kontrolni bitovi korektni
+- u slučaju da su korektni, greška se nije desila
+- u slučaju da nisu, primalac slaže kontrolne bitove kao binarni broj (to se zove sindrom)
+- taj broj otkriva poziciju greške
+- korekcija podrazumeva samo komplementiranje bita na toj poziciji
+- **npr. ako nema greške:**
+  - primljen podatak: 0 1 0 0 1 0 1
+  - p1 = 0+0+1+1 = 0, p2 = 1+0+0+1 = 0, p4 = 0+1+0+1 = 0
+  - sindrom = 000, nema greške, podatak = 0101
+- **ako ima greške:**
+  - primljen podatak: 0 1 0 0 1 1 1
+  - p1 = 0+0+1+1 = 0, p2 = 1+0+1+1 = 1, p4 = 0+1+1+1 = 1
+  - sindrom = 110, komplementirati bit 6, podatak = 0101 (korektno nakon komplementiranja)
+  - ako i kada se desi greška, ovakav pristup jedinstveno pokazuje gde se desila
+- sa svakim dodatnim kontrolnim bitom broj podataka koje možemo da iskontrolišemo drastično raste, tj. duplira se
+- stepen iskorišćenosti bi se povećavao sa rastom kontrolnih bitova, u ovom kratkom primeru deluje da je neefikasno, tu je radi demonstracije, na kompleksnijim primerima radi značajno bolje
+
+**Kodovi u praksi**
+
+Drugačiji, kompleksniji i van opsega kursa :). Hamingovi se retko koriste, najčešće su u upotrebi:
+- konvolucioni kodovi
+- metoda parnosti za malu gustinu (LDPC - low density parity check)
+- Rid-Solomonovi kodovi
+
+**Kada koristiti detekciju, a kada korekciju grešaka?**
+
+Korekcija grešaka:
+- kada su greške očekivane, ravnomerne i relativno kratke
+- nema vremena za retransmisiju
+- najčešće se radi na fizičkom sloju
+
+Detekcija grešaka:
+- efikasnija kada greške nisu očekivane, tj. kada su retke
+- kada se dese, nema veze iako su velike
+- obično se koristi u sloju veze u kombinaciji sa retransmisijom okvira
+
+Distribucija greške:
+- ako je verovatnoća greške 0.001, to može da znači:
+- 1-bitna greška na svakih 1000 bitova
+- 100-bitna (rafalna) greška na svakih 100.000 bitova
+
+Kada je bolja detekcija, a kada korekcija ako je npr. veličina okvira 100 bitova? 
