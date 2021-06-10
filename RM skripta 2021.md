@@ -67,6 +67,19 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
       - [Kontrolni zbirovi](#kontrolni-zbirovi)
       - [Ciklička provera redundanse (CRC)](#ciklička-provera-redundanse-crc)
   - [16. Korekcija grešaka u sloju veze](#16-korekcija-grešaka-u-sloju-veze)
+  - [17. Sloj veze, tipovi servisa, okruženje, utopijski jednosmerni protokol](#17-sloj-veze-tipovi-servisa-okruženje-utopijski-jednosmerni-protokol)
+    - [Tipovi servisa](#tipovi-servisa)
+    - [Utopijski jednosmerni protokol](#utopijski-jednosmerni-protokol)
+  - [18. Kontrola toka, ARQ, pauze (tajmauti), duplikati, protokol "stani i čekaj" za savršen i nesavršen kanal](#18-kontrola-toka-arq-pauze-tajmauti-duplikati-protokol-stani-i-čekaj-za-savršen-i-nesavršen-kanal)
+    - [Kontrola toka](#kontrola-toka)
+    - [Protokol "stani i čekaj" za savršen kanal](#protokol-stani-i-čekaj-za-savršen-kanal)
+    - [ARQ](#arq)
+    - [Protokol "stani i čekaj" za nesavršen kanal](#protokol-stani-i-čekaj-za-nesavršen-kanal)
+  - [19. Protokol kliznih prozora u sloju veze, "1-bitni", "vrati se N", "selektivno ponavljanje"](#19-protokol-kliznih-prozora-u-sloju-veze-1-bitni-vrati-se-n-selektivno-ponavljanje)
+    - [Koncept kliznih prozora](#koncept-kliznih-prozora)
+    - [1-bitni protokol kliznih prozora](#1-bitni-protokol-kliznih-prozora)
+    - ["Vrati se N" protokol](#vrati-se-n-protokol)
+    - [Protokol selektivnog ponavljanja](#protokol-selektivnog-ponavljanja)
 
 
 <div style="page-break-after: always"></div>
@@ -1051,3 +1064,196 @@ Distribucija greške:
 - 100-bitna (rafalna) greška na svakih 100.000 bitova
 
 Kada je bolja detekcija, a kada korekcija ako je npr. veličina okvira 100 bitova? 
+
+## 17. Sloj veze, tipovi servisa, okruženje, utopijski jednosmerni protokol
+
+Tipovi servisa - načini povezivanja dve tačke i mehanizmi komunikacije između njih.
+Nakon završetka ove oblasti imamo preduslov (dovoljno znanja) za uspostavljanje komunikacije na dosta niskom nivou - npr. ne povezivanje korisnika http protokolom i sl, nego komunikacija u lokalnoj mreži između računara i deljenje sirovih podataka. 
+
+### Tipovi servisa
+
+**Servis bez uspostave veze i bez potvrde prijema**
+- ne postoji koncept povezivanja i onog momenta "ok, mi komuniciramo od ovog trenutka", podaci se samo šalju bez unapred kontrolnog saobraćaja
+- okvir se šalje nezavisno i bez retransmisije u slučaju greške
+- primer je Ethernet
+
+**Servis bez uspostave veze sa potvrdom prijema**
+- isto kao prvi slučaj za bez uspostave veze
+- radi se retransmisija ako se javi potreba
+- malo pouzdaniji servis u odnosu na prethodni
+- primer je WiFi, on je tehnološki nepouzdan pa ovakva logička pouzdanost odgovara 
+
+**Servis sa uspostavom veze i sa potvrdom prijema**
+- nosi određeni trošak
+- efikasnost prenosa se meri kao broj efektivnih bajtova/ukupan broj bajtova (podaci i metapodaci) 
+- uspostava veze omogućava da podaci teku istim redom kojim su i poslati
+- retko se koristi
+
+```
+Summary gde se sada nalazimo:
+
+Hardver/softver nije isto što i logičko/fizičko!! 
+Npr. algoritam (kao logička stvar) se može realizovati i hardverski i softverski.
+
+Fizički sloj - realizovan fizički, na optičkim medijumima i čvorovima, ruterima, hardverski.
+Sloj veze - potpuno je logički, realizovan hardverski i softverski. 
+```
+
+Kod sloja veze hardverski su implementirani delovi koje je lakše automatizovati, tj. nemaju klasičnu programsku konstrukciju (rekurzija npr.), već konstrukciju koja više podseća na neko množenje matrica, skalarne operacije, itd. Malo suptilniji koncepti kao što je retransmisija u kombinaciji sa detekcijom grešaka i kontrola toka se realizuju softverski jer su nezgodni za hardver. Kad god imamo mogućnosti za hardver, trebalo bi da težimo takvoj implementaciji jer radi brže.
+
+Sloj veze koji je realizovan hardverski je na mrežnoj kartici, a softverski je na nivou operativnog sistema.
+
+<p align="center"> <img alt="c sum" width=350 src="resources/datalinklayer.png"/> </p>
+
+Pregled funkcija za interakciju sloja veze sa slojem ispod i iznad:
+
+| Grupa | Funkcija | Opis |
+|-------|----------|-------|
+|Mrežni sloj|from_network_layer(&packet) </br> to_network_layer(&packet)|Uzima paket iz mrežnog sloja </br>Prosleđuje paket mrežnom sloju|
+|Fizički sloj| from_physical_layer(&frame)|Prihvata okvir iz fizičkog sloja </br> Prosleđuje okvir fizičkom sloju|
+|Događaji i tajmeri|wait_for_event(&event)</br>start_timer(seq_nr)</br>stop_timer(seq_nr)</br>start_ack_timer()</br>stop_ack_timer()|Čeka na paket/okvir/istek tajmera</br>Pokreće tajmer</br>Prekida tajmer</br>Pokreće tajmer za okvir potvrde ACK</br>Zaustavlja tajmer za okvir potvrde ACK|
+
+Događaji i tajmeri značajno pomažu u sinhronizaciji, kontroli toka i implementaciji algoritama generalno (blokirajuće funkcije, znamo sa drugih predmeta).
+
+**Osnovni protokoli sloja veze**
+
+* Utopijski jednosmerni protokol
+* "Stani i čekaj" protokol za kanal bez grešaka
+* "Stani i čekaj" protokol za kanal sa greškama
+
+### Utopijski jednosmerni protokol
+
+Koristi se u realizaciji Etherneta, optimistički protokol. Ethernet je tehnološki pouzdan, tako da nema puno tehnoloških manjakaka koji se moraju nadomestiti logički. Kablovi su takvi da ima malo šuma, a radi se o lokalnoj mreži gde su udaljenosti jako male i prenos podataka je brz, kašnjenja su beznačajna.
+
+3 bitne pretpostavke: 
+
+* **U ovom protokolu ne predviđa se pojava greške**, što ne znači da ne može da se desi, već će biti detektovana na višim slojevima i razrešiće se takođe tu. To je uglavnom skuplja stvar jer imamo veću granularnost - ako odložimo problem nećemo morati baš da zapitkujemo svaki čas i na svakom koraku proveravamo grešku na nižim slojevima, ali kada se desi, greška će nas sačekati na nekom višem sloju i napraviti veći problem, što nije toliko strašan slučaj ako greške nisu učestale.
+* **Primalac je brz kao i pošiljalac**, što znači da prilikom realizacije ovih algoritama nemamo "čekanja pri slanju", odnosno pošiljalac će slati kad god može da šalje i neće ispitivati da li primalac može da prihvati podatke. 
+* **Prenos podataka je jednosmeran** - nije toliko jaka pretpostavka s obzirom na to da se dvosmerna komunikacija može ostvariti pokretanjem dva odvojena procesa, jedan za slanje, jedan za primanje.
+
+Algoritam:
+
+<p align="center"> <img alt="c sum" width=600 src="resources/utopia_protocol.png"/> </p>
+
+Kod pošiljaoca:
+* from_network_layer(&buffer) - uzima se paket sa sloja iznad (mrežnog sloja), zbog enkapsulacije podataka se ono što se dobija spakuje u neku "kovertu" sa metapodacima
+* frame s - okvir u koji se ugrađuje taj paket sa višeg sloja, taj paket je u trenutnom sloju samo neka sekvenca bitova bez semantike
+* (komanda koja fali/nije ubačena) u druga polja okvira se upisuju neke relevantne metainformacije koje su bitne za primaoca sa druge strane, npr. ti podaci mogu biti adrese pošiljaoca i primaoca
+* to_physical_layer(&s) - okvir se šalje na fizički sloj
+* (prirodno) blokirajuća naredba u ovom slučaju je prva, tj. from_network_layer(&buffer) jer nećemo uzimati sa mrežnog sloja ništa ako nema šta da se šalje
+
+Kod primaoca:
+* wait_for_event(&event) - suspendovani proces, čeka na događaj, tj. na stizanje okvira. Kada se ovo desi, odblokirava se, izlazi iz suspendovanog stanja, počinje da izvršava prvu narednu naredbu, a to je...
+* from_physical_layer(&r), tj. uzimanje sadržaja sa fizičkog sloja, jer je to jedini događaj koji je mogao da se desi u ovom kontekstu.
+* to_network_layer(&r.info) - otpakivanje sadržaja i slanje tako da se dalje ne šalju informacije koje nisu relevantne za više slojeve.
+
+
+## 18. Kontrola toka, ARQ, pauze (tajmauti), duplikati, protokol "stani i čekaj" za savršen i nesavršen kanal
+
+Eliminišemo jednu po jednu pretpostavku, što nam otežava implementaciju algoritma.
+
+### Kontrola toka
+
+Eliminacija prve pretpostavke - šta ako pošiljalac i primalac nemaju iste brzine slanja, odnosno primanja? Neophodno je da postoji nekakva kontrola toka. 
+Ovaj problem se rešava logički, a ne tehnološki, tj. nije rešenje nabaviti novi hardver. Prirodno, komunikacija između brze i spore strane se odvija bliže ovoj sporijoj, tj. usporava se da joj se prilagodi. Nije problem ukoliko imamo sporog pošiljaoca, već obrnuto, ukoliko je primalac sporiji jer se kanali zatrpaju okviri, te se neki okviri se odbijaju jer ne mogu da se procesiraju. Ideja je da pošiljalac pošalje okvir, i da ne šalje naredni pre nego što mu stigne potvrda za ovaj prethodni. Potrebno je da u algoritam primaoca ugradimo to slanje "potvrda", i to je uglavnom okvir koji ima neke specijalne, unapred određene karaktere. Kada pošiljalac dobije okvir potvrde, šalje se sledeći. Da bi ovo funkcionisalo, pošiljalac mora da ima neko ograničenje vremena čekanja na potvrdu, inače ulazi u beskonačnu petlju u slučaju da se desio neki problem. Jasni su problemi predugog ili prekratkog čekanja.
+
+### Protokol "stani i čekaj" za savršen kanal
+
+Ovaj protokol garantuje usaglašenost u brzini komunikacije. Primalac šalje prazan okvir (ack) kada je spreman da nastavi. Šalje se okvir po okvir, što je neefikasno.
+
+<p align="center"> <img alt="c sum" width=500 src="resources/flow_control.png"/> </p>
+
+### ARQ
+
+Eliminišemo sledeću pretpostavku, tj. sada kanal nije savršen i mogu se pojaviti greške i izgubljeni okviri. U ovom slučaju se služimo detekcijom i retransmisijom ARQ (automatic repeat request), kao i korekcijom grešaka koju smo već obradili i koja se tiče fizičkog sloja tako da je nećemo mnogo pominjati.
+
+Obično se koristi kada su greške uobičajene i kada se moraju ispraviti, npr. Wifi i TCP. Funkcioniše na sledeći način:
+
+- primalac šalje potvrdu o prijemu ispravnog okvira ACK (acknowledgement), gde je ACK takođe okvir
+- pošiljalac automatski šalje ponovo nakon vremenske pauze (tajmauta), osim ako u međuvremenu pristigne ACK
+- suština je u tome da se ACK šalje samo ako je stigao ispravan okvir sa podacima, u suprotnom ne, što znači da se retransmisija dešava samo ako je okvir neispravan ili ako okvir uopšte nije stigao
+- ako je okvir neispravan, ništa se ne dešava, primalac iskulira situaciju
+- ako od primaoca ACK nije stigao u predviđenom roku, pošiljalac ponovo šalje okvir
+- kod nesavršenog kanala, može da se desi da se okvir prosto zagubio, što znači da smo u onoj situaciji kad ACK nije stigao na vreme, tako da se svakako okvir ponovo šalje
+- može da se desi situacija da ACK samo nije stigao na vreme do pošiljaoca tako da se okvir svakako šalje ponovo
+
+Ključna pitanja vezana za ARQ:
+
+1. Kolika treba da bude pauza (vreme na tajmeru, tajmaut)?
+2. Kako da se izbegne interpretiranje dupliranih okvira kao novih?
+
+Osnovni cilj je korektnost, bez grešaka i duplikata, a onda želimo da komunikacija bude i efikasna.
+
+Pauza ne treba da bude ni premala (nepotrebne transmisije), a ni prevelika (neiskorišćenost kanala). Ispostavlja se da je odgovor na prvo pitanje jednostavan - radi se analiza najgoreg slučaja. Uzima se najgori slučaj, tj. u lokalnoj mreži najudaljenije dve tačke (kada se uzme u obzir dužina kablova, ruteri i svičevi koji postoje između, itd.), delimo taj slučaj sa brzinom svetlosti, uračunamo neka potencijalna kašnjenja i dobijamo neku relativno ok meru koliko treba da čekamo. Na internetu, tj. na udaljenim računarima koji nisu u lokalnoj mreži ovo je dosta komplikovanije jer su komunikacije tranzitivne, i uglavnom se dinamički određuje.
+
+Što se drugog pitanja tiče, duplikati se mogu desiti u dva slučaja, i u oba slučaja pošiljalac pošalje isti okvir ponovo, pa primalac ima nekorektne podatke jer je isti okvir stigao dva puta, umesto jednom: 
+
+1. Kada ACK potvrda o prijemu ispravnog okvira ne stigne do pošiljaoca uopšte.
+2. Kada ACK potvrda o prijemu ispravnog okvira ne stigne do pošiljaoca tokom pauze.
+
+U okvire i ACK-ove uvodimo sistem oznaka kako bi se izbegli duplikati. Dovoljno je samo razlikovati trenutni okvir od narednog okvira, tj. dodati jedan bit.
+
+
+### Protokol "stani i čekaj" za nesavršen kanal
+
+<p align="center"> <img alt="c sum" width=500 src="resources/stop_and_wait_1.png"/> </p>
+<p align="center"> <img alt="c sum" width=500 src="resources/stop_and_wait_2.png"/> </p>
+
+Ograničenje ovog protokola nije korektnost (sredili smo), već iskorišćenost/efikasnost komunikacionog protoka u tehnološkom smislu. Komunikacioni protok je daleko veći nego što se prikazuje u ovim slučajevima, jer je ovde omogućen prenos samo jednog okvira duž kanala u jednom trenutku. Iz ovog razloga uvodimo uopštenje protokola "stani i čekaj" - protokol klizni (pomerajući) prozori.
+
+## 19. Protokol kliznih prozora u sloju veze, "1-bitni", "vrati se N", "selektivno ponavljanje"
+
+Zbog problema efikasnosti uvodimo uopštenje protokola "stani i čekaj" - protokol klizni (pomerajući) prozori. Razlika između ovog i prethodnog je ta da u svakom momentu W okvira bude u kanalu (dakle, više od jednog), što zahteva modifikaciju algoritma tako da barata sa većim opsegom brojeva (ne 1 bit kao do sad, nego više bitova u zavisnosti od broja W). W okvira za RTT (round trip time) (=2D), gde je RTT vreme potrebno da okvir ode i da stigne potvrda za njega.
+
+### Koncept kliznih prozora
+
+Pošiljalac: 
+- ima na raspolaganju nekoliko (W) uzastopnih okvira koje može da pošalje
+- Mora da ih baferuje zbog eventualne retransmisije
+- Sa pristiglim ACK-ovima pošiljalac pomera spisak uzastopnih raspoloživih okvira (pomera prozor)
+
+Primalac:
+- ima na raspolaganju prostor za nekoliko okvira koje može da prihvati
+- mora da poseduje bafere za njih
+- kako stižu novi okviri "prozor" se pomera
+
+Veći prozori omogućavaju protočnu odbranu za efikasniju upotrebu kanala.
+* Stani i čekaj (W = 1) je neefikasan, posebno za duže kanale
+* Optimalan (W) zavisi od BDP
+* Želimo da je W $\geq$ 2BDP+1 u cilju što boljeg iskorišćenja
+
+Postoje različiti načini za razrešavanje grešaka i za načine baferisanja, npr. "vrati se N" protokol i protokol sa selektivnim ponavljanjem.
+
+### 1-bitni protokol kliznih prozora
+
+Nema odvojenih algoritama za pošiljaoca i primaoca, jer sada i jedan i drugi mogu da šalju i primaju.
+* za ACK koristimo okvir iz suprotnog pravca ("šlepanje")
+* radi nad nesavršenim kanalom
+* omogućava kontrolu toka 
+
+<p align="center"> <img alt="c sum" width=500 src="resources/1bit.png"/> </p>
+
+Radi korektno, ali može doći do usporenja ako svi započnu istovremeno.
+
+<p align="center"> <img alt="c sum" width=600 src="resources/1bit_2.png"/> </p>
+
+### "Vrati se N" protokol 
+
+Primalac prihvata samo okvire koji stižu redom, pritom odbacuje sve koji su usledili nakon spornog. Primaocu ističe u nekom momentu tajmaut i on šalje sve nepotvrđene okvire do kraja prozora ponovo.
+
+<p align="center"> <img alt="c sum" width=600 src="resources/back_n.png"/> </p>
+
+- Jednostavan algoritam na strani primaoca, potreban mu je bafer za samo jedan okvir.
+- Nepotrebno trošenje protoka u slučaju velikih prozora, tada, u najgorem slučaju kompletni prozori (W okvira) moraju da se šalju ponovo.
+
+### Protokol selektivnog ponavljanja
+
+- Primalac prihvata okvir sve dok je redni broj okvira u opsegu definisanom kliznim prozorom.
+- NAK (negativni ACK) informiše pošiljaoca da ponovo pošalje problematični okvir (zarad efikasnosti), pre isteka tajmauta za ceo prozor.
+
+<p align="center"> <img alt="c sum" width=580 src="resources/selective_repetition.png"/> </p>
+
+- Složeniji za implementaciju od "Vrati se N" zbog baferisanja pri primanju i višestrukim tajmerima pri slanju.
+- Efikasnija upotreba protoka jer se sada samo izgubljeni okviri ponovo šalju.
+
+Dodatni zahtev: opseg brojeva okvira (S) mora biti najmanje dva puta veći od veličine prozora (W) kako bi se izbegli problemi sa retransmisijom okvira.
