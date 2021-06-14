@@ -1208,14 +1208,15 @@ Zbog problema efikasnosti uvodimo uopštenje protokola "stani i čekaj" - protok
 ### Koncept kliznih prozora
 
 Pošiljalac: 
-- ima na raspolaganju nekoliko (W) uzastopnih okvira koje može da pošalje
+- Ima na raspolaganju nekoliko (W) uzastopnih okvira koje može da pošalje
 - Mora da ih baferuje zbog eventualne retransmisije
 - Sa pristiglim ACK-ovima pošiljalac pomera spisak uzastopnih raspoloživih okvira (pomera prozor)
+- Bitna stvar je da ne čeka da okviri stignu, već šalje sve odjednom, uspostavlja se protočna obrada
 
 Primalac:
-- ima na raspolaganju prostor za nekoliko okvira koje može da prihvati
-- mora da poseduje bafere za njih
-- kako stižu novi okviri "prozor" se pomera
+- Ima na raspolaganju prostor za nekoliko okvira koje može da prihvati
+- Mora da poseduje bafere za njih
+- Kako stižu novi okviri "prozor" se pomera
 
 Veći prozori omogućavaju protočnu odbranu za efikasniju upotrebu kanala.
 * Stani i čekaj (W = 1) je neefikasan, posebno za duže kanale
@@ -1239,12 +1240,16 @@ Radi korektno, ali može doći do usporenja ako svi započnu istovremeno.
 
 ### "Vrati se N" protokol 
 
-Primalac prihvata samo okvire koji stižu redom, pritom odbacuje sve koji su usledili nakon spornog. Primaocu ističe u nekom momentu tajmaut i on šalje sve nepotvrđene okvire do kraja prozora ponovo.
+Primalac prihvata samo okvire koji stižu redom (ako primi 3, a očekuje 2, onda se odbija), pritom odbacuje sve koji su usledili nakon spornog. Primaocu ističe u nekom momentu tajmaut i on šalje sve nepotvrđene okvire do kraja prozora ponovo.
 
 <p align="center"> <img alt="c sum" width=600 src="resources/back_n.png"/> </p>
 
 - Jednostavan algoritam na strani primaoca, potreban mu je bafer za samo jedan okvir.
 - Nepotrebno trošenje protoka u slučaju velikih prozora, tada, u najgorem slučaju kompletni prozori (W okvira) moraju da se šalju ponovo.
+- Pošiljalac pomera prozor tako da najlevlje ne postoji ništa što je već poslato
+- Protočna obrada, ima samo prividnog kašnjenja pre stizanja prvog okvira, kašnjenje je maskirano tako što se naredni okviri svakako šalju čim se pomeri prozor, a primalac ih prihvata ako može
+- Ako se desi da primalac ne pošalje potvrdu (ne primi okvir, desila se greška), pošiljalac shvata da nije dobio potvrdu, posle tajmauta šalje sve istim redosledom iz prozora
+- Primalac ima prozor veličine 1 u kom prima samo ono što treba, a pošiljalac veličine n, svako se ponaša u skladu sa tim
 
 ### Protokol selektivnog ponavljanja
 
@@ -1257,3 +1262,55 @@ Primalac prihvata samo okvire koji stižu redom, pritom odbacuje sve koji su usl
 - Efikasnija upotreba protoka jer se sada samo izgubljeni okviri ponovo šalju.
 
 Dodatni zahtev: opseg brojeva okvira (S) mora biti najmanje dva puta veći od veličine prozora (W) kako bi se izbegli problemi sa retransmisijom okvira.
+
+## 20. MAC podsloj, uloga, alokacija kanala, ALOHA protokol
+
+### Uloga
+
+MAC podsloj se tiče deljenja komunikacionog kanala od strane većeg broja korisnika. Potreban je neki vid identifikacije čvorova u mreži. Ko kada koristi kanal? Ovaj problem se može rešiti na dva načina:
+
+### Alokacija kanala
+
+1. Statička alokacija kanala - multipleksiranje, već smo pričali o ovome, korisnici koriste istovremeno komunikacioni kanal, loša u slučaju promenljivog saobraćaja, niska iskorišćenost kanala
+2. Dinamička alokacija kanala - kanal se dodeljuje u skladu sa potrebama korisnika, potencijalno N puta efikasnije za N korisnika
+
+### ALOHA protokol
+
+Mreža koja je povezivala Havajska ostva krajem 1960ih godina, koristila jednostavan princip slanja - ako imaš nešto da šalješ pošalji, a znaš da je uspelo slanje ako primiš ACK, a ako ne, podatak se šalje ponovo. Ključni element ovog protokola je kada se šalje taj podatak - to vreme nije determinističko, čeka se slučajan interval vremena. Neki okviri će biti izgubljeni, ali mnogi će doći na odredište. Čeka se slučajan, a ne fiksni interval vremena da ne bi došlo do kolizije (?), tj. dva podatka koja idu istovremeno kroz žicu mogu da se izmešaju. Šansa da se to desi ako uzimamo nasumični interval je vrlo mala.
+
+ALOHA protokol je jednostavan, decentralizovan i radi dobro ako je malo opterećenje mreže.
+Nije efikasan kada je visoko opterećenje - eksperimentalno je utvrđeno da je efikasnost svega 18%, što se može poboljšati diskretizacijom vremena i onemogućavanjem slanja bilo kada na 36%.
+
+Klasični Ethernet za lokalne mreže je inspirisan ALOHA protokolom - Bob Metkalf. Čvorovi dele koaksijalni kabl protoka 10 Mb/s.
+
+## 21. CSMA, CSMA/CD, BEB
+
+### CSMA - Carrier Sense Multiple Access
+
+Prvo poboljšanje ALOHA protokola - osluškivanje kanala pre slanja, što je jednostavno kod žičanih, ali ne i bežičnih kanala. To ne eliminiše šanse za koliziju, ali ih značajno smanjuje. Problem sa ovim je što signal može da se pojavi na kanalu nakon osluškivanja, pogotovo zbog kašnjenja. CSMA je dobar protiv kolizija ako je BDP mali.
+
+### CSMA/CD
+
+Poboljšanje CSMA - uvodi detekcije kolizija i obustavlja slanje okvira, jer bi sadržaj svakako bio korumpiran. U slučaju bežičnog kanala ovo je teško. Detekcije kolizija u ovom slučaju su implementirane na hardverskom nivou, tj. na mrežnoj kartici. Kolizija ne može da se detektuje na velikim udaljenostima, tako da se na magistralu kači komparator (?) koji se bavi time. Interval u okviru kojeg će čvor sigurno čuti da se desila kolizija je 2D (RTT) sekundi. Problem/komplikacija: može da se desi da čvor pošalje nešto pre nego što shvati da se desila kolizija - rešenje je da se minimalna veličina okvira ograniči tako da traje najmanje 2D sekundi. Za eternet minimalna dužina okvira je 64 bajta. Sada, pošto smo detektovali koliziju, šta posle? Kada poslati ponovo? Jedno od rešenja je poslati u nasumičnom trenutku, što bi bilo okej, ali nije dovoljno efikasno jer postoje različite situacije, ne mora da znači da imamo samo jednog pošiljalaca koji nam smeta. 
+
+### BEB - binarno eksponencijalno odlaganje
+
+Distribuirani algoritam procene broja korisnika na mreži. Donekle bolje rešenje je da ako ima N ljudi koji čekaju, svaki šalje sa verovatnoćom 1/N. Dakle, ako pretpostavimo da znamo koliko je ljudi trenutno na mreži, možemo da prilagodimo verovatnoće slanja.
+Mehanizam ocene verovatnoće (u distribuiranom okruženju):
+
+- ako šalješ i dobijaš potvrde, nastavi da šalješ
+- prva kolizija - čekaj 0 ili 1 okvira
+- opet kolizija - čekaj između 0 i 3 okvira
+- treća kolizija - čekaj između 0 i 7 okvira
+
+BEB duplira interval nakon svake uzastopne kolizije. Brzo raste, tako da dolazi do dobre procene, čak iako je verovatnoća jako mala. Veoma je efikasan u praksi.
+
+Verovatnoće na uređaju su implementirane tako da što je manja verovatnoća, to je veći interval iz kog se bira slučajni broj. 
+
+### Klasičan Eternet - IEEE 802.3
+
+Najpopularniji vid organizovanja LAN tokom osamdesetih i devedesetih. 10mb/s preko deljenog koaksijalnog kabla, koristi "CSMA/CD sa BEB". Adrese pošiljaoca i primaoca - koncept koji nismo imali ranije u sloju veze jer su protokoli bili podrazumevano PPP (point to point protokoli). MAC adrese su jedinstvene adrese uređaja (može da se promeni na silu, ali nije preporučljivo, a i zašto bi?). Koristio se CRC-32 za detekciju grešaka, nema ACK ili retransmisije, to se ostavlja višim slojevima.
+
+<p align="center"> <img alt="c sum" width=580 src="resources/ethernet.png"/> </p>
+
+Moderni eternet ima drugačiji pristup - nema deljenog pristupa (MAC), već se koriste skretnice (svičevi). O tome kasnije.
