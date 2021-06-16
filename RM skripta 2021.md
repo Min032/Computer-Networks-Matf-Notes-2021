@@ -80,6 +80,43 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
     - [1-bitni protokol kliznih prozora](#1-bitni-protokol-kliznih-prozora)
     - ["Vrati se N" protokol](#vrati-se-n-protokol)
     - [Protokol selektivnog ponavljanja](#protokol-selektivnog-ponavljanja)
+  - [20. MAC podsloj, uloga, alokacija kanala, ALOHA protokol](#20-mac-podsloj-uloga-alokacija-kanala-aloha-protokol)
+    - [Uloga](#uloga-1)
+    - [Alokacija kanala](#alokacija-kanala)
+    - [ALOHA protokol](#aloha-protokol)
+  - [21. CSMA, CSMA/CD, BEB](#21-csma-csmacd-beb)
+    - [CSMA - Carrier Sense Multiple Access](#csma---carrier-sense-multiple-access)
+    - [CSMA/CD](#csmacd)
+    - [BEB - binarno eksponencijalno odlaganje](#beb---binarno-eksponencijalno-odlaganje)
+  - [22. MAC protokoli zasnovani na redosledu. Token Ring.](#22-mac-protokoli-zasnovani-na-redosledu-token-ring)
+    - [MAC protokoli zasnovani na redosledu.](#mac-protokoli-zasnovani-na-redosledu)
+    - [IBM token ring](#ibm-token-ring)
+    - [Prednosti i mane protokola sa redosledom](#prednosti-i-mane-protokola-sa-redosledom)
+  - [23. MAC protokoli za bežične mreže](#23-mac-protokoli-za-bežične-mreže)
+    - [Jedno rešenje: MACA (Multiple Access with Collision Avoidance)](#jedno-rešenje-maca-multiple-access-with-collision-avoidance)
+  - [24. Klasični Eternet - IEEE 802.3](#24-klasični-eternet---ieee-8023)
+  - [25. Moderni (komutirani) Eternet](#25-moderni-komutirani-eternet)
+- [Mrežni sloj](#mrežni-sloj)
+  - [26. Mrežni sloj, uloga, motivacija, rutiranje i prosleđivanje (ukratko), tipovi servisa na mrežnom sloju, objašnjenja i njihov uporedni odnos](#26-mrežni-sloj-uloga-motivacija-rutiranje-i-prosleđivanje-ukratko-tipovi-servisa-na-mrežnom-sloju-objašnjenja-i-njihov-uporedni-odnos)
+    - [Uloga i motivacija](#uloga-i-motivacija)
+    - [(Čime se ruteri bave?) Rutiranje i prosleđivanje](#čime-se-ruteri-bave-rutiranje-i-prosleđivanje)
+    - [Tipovi servisa na mrežnom sloju, objašnjenja i uporedni odnos](#tipovi-servisa-na-mrežnom-sloju-objašnjenja-i-uporedni-odnos)
+    - [IPv4 (Internet protokol)](#ipv4-internet-protokol)
+  - [27. IP adrese i prefiksi](#27-ip-adrese-i-prefiksi)
+  - [28. IP prosleđivanje](#28-ip-prosleđivanje)
+  - [29. ARP i DHCP](#29-arp-i-dhcp)
+    - [DHCP (Dynamic Host Configuration Protocol)](#dhcp-dynamic-host-configuration-protocol)
+    - [ARP (Address Resolution Protocol)](#arp-address-resolution-protocol)
+  - [30. ICMP i NAT](#30-icmp-i-nat)
+    - [ICMP (Internet Control Message Protocol)](#icmp-internet-control-message-protocol)
+    - [NAT (Network Address Translation Protocol)](#nat-network-address-translation-protocol)
+  - [31. Rutiranje, mehanizmi alokacije protoka, modeli isporuke, ciljevi rutiranja, principi dizajna algoritama rutiranja, rutiranje sa najkraćim putevima (najmanjim troškom), Dajkstrin algoritam.](#31-rutiranje-mehanizmi-alokacije-protoka-modeli-isporuke-ciljevi-rutiranja-principi-dizajna-algoritama-rutiranja-rutiranje-sa-najkraćim-putevima-najmanjim-troškom-dajkstrin-algoritam)
+    - [Mehanizmi alokacije protoka](#mehanizmi-alokacije-protoka)
+    - [Modeli isporuke](#modeli-isporuke)
+    - [Ciljevi rutiranja](#ciljevi-rutiranja)
+    - [Principi za dizajn algoritama rutiranja](#principi-za-dizajn-algoritama-rutiranja)
+    - [Rutiranje sa najkraćim putevima](#rutiranje-sa-najkraćim-putevima)
+    - [Dajkstrin algoritam](#dajkstrin-algoritam)
 
 
 <div style="page-break-after: always"></div>
@@ -1409,6 +1446,8 @@ Učenje unazad - prosleđivanje okvira na osnovu tabele relacija između broja p
 
 Petlje su problem u lokalnim mrežama jer ceo ovaj sistem nije dovoljno pametan da radi sa njima zbog beskonačnih petlji, tako da se lokalna mreža mora konfigurisati tako da se izbegavaju ciklusi uopšteno tako što (...... ne razume se šta kaže ......) usmeren ciklični graf (?!).
 
+# Mrežni sloj
+
 ## 26. Mrežni sloj, uloga, motivacija, rutiranje i prosleđivanje (ukratko), tipovi servisa na mrežnom sloju, objašnjenja i njihov uporedni odnos
 
 ### Uloga i motivacija
@@ -1421,7 +1460,7 @@ Koji uređaji čine mrežni sloj? - komunikacioni kanali i ruteri koji su poveza
 
 ### (Čime se ruteri bave?) Rutiranje i prosleđivanje
 
-Rutiranje je proces određivanja putanja kojima će se prosleđivanje vršiti. Ovakvo odlučivanje je skupo i zahteva napredne algoritme. Potrebno je da ruter nekim algoritmom (funkcijom?) popuni tabelu rutiranja tako da svaki sledeći put kada neki paket stigne iz te tabele može da pročita gde bi taj paket trebalo poslati. Alokacija protoka je ključni aspekt rutiranja. Za sada ćemo pretpostaviti da je rutiranje već izvršeno, tj. da već imamo formiranu tabelu rutiranja, prvo pričamo o prosleđivanju.
+Rutiranje je proces određivanja putanja kojima će se prosleđivanje vršiti. Ovakvo odlučivanje je skupo i zahteva napredne algoritme. Potrebno je da ruter nekim algoritmom (funkcijom?) popuni tabelu rutiranja tako da svaki sledeći put kada neki paket stigne iz te tabele može da pročita gde bi taj paket trebalo poslati. Za sada ćemo pretpostaviti da je rutiranje već izvršeno, tj. da već imamo formiranu tabelu rutiranja, prvo pričamo o prosleđivanju.
 
 Prosleđivanje je operativni postupak, tj. proces slanja paketa susednim čvorovima na osnovu lokalne tabele rutiranja. Dakle, da bi se ovo desilo, potrebno je da postoji već formirana tabela.
 
@@ -1513,7 +1552,93 @@ Javna IP adresa mora biti jedinstvena oznaka računara na internetu. Mora se dod
 
 Kako ruteri koriste tabele rutiranja u kojima je preslikavanje između IP adresa cilja i IP adresa sledećeg uređaja na koji treba da se desi hop, te tabele rutiranja bi "trebalo" da imaju 4 milijarde entryja. Zbog one korelacije sa geografskim lokacijama to ne važi zapravo, već u tabele rutiranja upisujemo IP preslikavanje nad grupama adresa, pošto je velika verovatnoća da će adrese iz istog opsega biti takođe i geografski blizu. Ti prefiksi nisu disjunktni, tj. dešava se da jedna IP adresa pripada većem broju prefiksa, i zato se pri daljem prosleđivanju primenjuje algoritam najdužeg prefiksa kako bi se našao najuži opseg gde bi trebalo paket dalje da ide.
 
+Da li je bolje imati ogromnu tabelu sa više specifičnih adresa ili manju koja ima opštije opsege? U suštini ne postoji odgovor, uvek je najbolje balansirati između vremenske i prostorne složenosti i razmotriti kako je najbolje u zavisnosti od potreba i situacije.
 
+`O ovom pitanju je baš kratko pričano na času u ovom kontekstu, ali u okviru drugih pitanja ima stvari koje se mogu ubaciti kao odgovor.`
+
+## 29. ARP i DHCP
+
+4 pomoćna mehanizma za ispravno funkcionisanje rutera: ARP, DHCP, ICMP i NAT.
+
+### DHCP (Dynamic Host Configuration Protocol)
+
+Dva načina dodeljivanja IP adresa:
+
+1. Statičko dodeljivanje - sistem admin ručno dodeljuje IP adrese uređajima u lokalnoj mreži. Bitna stvar koje se podsećamo je da su IP adrese u lokalnoj mreži najčešće privatne i globalno nisu jedinstvene, tj. potencijalno postoji još lokalnih mreža u okviru kojih postoje te IP adrese. Problem sa ovim pristupom je to što je teško voditi računa o tome kome se šta dodeljuje, koje adrese su zauzete, koji sve uređaji postoje uopšte u mreži, itd. Neretko se dešavaju greške da se dodeli adresa koja je već iskorišćena, ili da neiskorišćen računar zadrži svoju adresu bespotrebno tako da neki sledeći uređaj ne može da se uključi jer nema slobodnih.
+2. DHCP je protokol za dinamičko dodeljivanje IP adresa u lokalnim mrežama koje u datom momentu imaju samo MAC adresu. Kako je IP adresa logička stvar (za razliku od MAC koja je hardverska), potrebno je da se ona dodeli na softverski način. DHCP omogućava da se korisnici prijavljuju da budu deo lokalne mreže i onda im adresa bude dodeljena. Primer je priključivanje na wifi, npr. na nekoj konferenciji. Kada se isključimo sa mreže, u nekom trenutku se po protokolu to detektuje i naša nekadašnja adresa postaje slobodna za korišćenje.
+  
+DHCP je relativno jednostavan:
+1. Čvor emituje paket celoj mreži jer ne zna gde se tačno nalazi DHCP (specijalna adresa za emitovanje je 255.255.255.255)
+2. DHCP odgovara čvoru ciljano na osnovu njegove MAC adrese sa predloženom IP adresom nakon što se konsultuje sa tabelom slobodnih adresa
+3. Čvor emituje odgovor da mu odgovara predložena adresa (može da bude više DHCP-ova, zato se odgovor emituje, a ne šalje direktno, trebalo bi da imaju sinhronizovane tabele adresa, može da se desi i da različiti DHCP-ovi pošalju različite adrese, samo jedna od njih će biti prihvaćena, ali ipak svi moraju da budu obavešteni o donetoj odluci)
+4. DHCP potvrđuje i briše adresu iz spiska slobodnih
+
+Klijent može i da obnovi već dodeljenu IP adresu ako je ranije dobio. Šalje se samo REQUEST, a dobija se nazad ACK.
+
+
+### ARP (Address Resolution Protocol)
+
+Sledeći problem: čvor mora da sazna ciljnu adresu u sloju veze (MAC) kako bi poslao okvire na odgovarajući čvor, kako na osnovu ciljne IP adrese da sazna adresu u sloju veze (MAC)?
+
+1. Čvor koji hoće da sazna emituje ciljnu IP adresu
+2. Onaj koji ima tu adresu za svoju izvornu mu vraća odgovor sa svojom adresom u sloju veze (MAC adresom)
+
+
+## 30. ICMP i NAT
+
+### ICMP (Internet Control Message Protocol)
+
+Prateći protokol za IP protokol, protokol za greške. Kada usmerivač detektuje grešku pri prosleđivanju, npr. preveliki paket, maksimalan broj hopova, itd, usmerivač šalje ICMP paket pošiljaocu, a sam paket koji je problematičan se odbacuje.
+
+ICMP paket sadrži tip greške, kod i kontrolni zbir. ICMP paket je isti kao IP paket, ima samo indikatorsko polje koje omogućava razlikovanje.
+
+
+| Naziv | Tip/kod | Upotreba |
+|-------|---------|----------|
+|Dest. Unreachable (Net or Host) - ne postoji dati računar na adresi |3/0 or 1|Nedostupnost cilja|
+|Dest. Unreachable (Fragment) - paket prolazi kroz ruter i premašuje ograničenja veličine|3/4|Paket prevelik|
+|Time exceeded - paket dostigao najveći mogući broj hopova|11/0|Traceroute komanda|
+|Echo Request or Reply|8 or 0/0|Ping (testiranje cilja)|
+
+### NAT (Network Address Translation Protocol)
+
+NAT povezuje računare iz lokalne mreže na spoljnu mrežu, npr. Internet, dakle nalazi se na izlazu lokalne mreže u globalnu. Postojanje NAT-a je neophodno zbog ograničenja broja adresa koje ima IPv4. Ideja je bila omogućiti većem broju uređaja da budu priključeni na internet nego što IPv4 dozvoljava tako što ne moramo svakom da dodelimo javnu IP adresu.  
+
+NAT je prljavi protokol - ruši slojevitost računarskih mreža i to da bi skup stvari kojima se slojevi bave trebalo da budu disjunktni. Čačka po informacijama transportnog sloja (?), tj. nalazi se negde između mrežnog i transportnog.
+
+Standardni scenario:
+- Kućni računari koriste privatne IP adrese
+- NAT (u okviru kućnog usmerivača - AP) povezuje više kućnih računara na jednu javnu adresu dodeljenu njemu od strane ISP. Dakle, ISP sve računare u toj mreži vidi kao jedan.
+
+NAT održava tabelu preslikavanja unutrašnjih/spoljnih adresa. Zapravo je to preslikavanje IP+TCP port informacija, NAT koristi kompozitni ključ koji je sastavljen od IP adrese i porta. Portovi su neophodni kako bi mapiranje bilo 1-1, jer je spoljnih adresa manje, obično samo jedna, jer je problem što se više računara slika u jednu izlaznu IP adresu, tako da kad jedan uređaj npr. pošalje GET zahtev, taj saobraćaj mora nekako njemu da stigne, a sa mreže sve stiže na zajedničku adresu. Zbog toga je neophodan spoljni port (pogledati desnu kolonu u tabeli ispod, to je kompozitni ključ). Kada stiže odgovor sa Interneta, odgovor stiže na određenu adresu I PORT.
+
+| Unutrašnji IP:port - šta računar misli| Spoljni IP:port - šta ISP misli|
+|--------------------|----------------|
+| 192.168.1.12:5523 | 44.25.80.3:1500 |
+| 192.168.1.13:1234 | 44.25.80.3:1501 |
+| 192.168.2.20:1234 | 44.25.80.3:1502 |
+
+Kako NAT radi?
+
+- Prilikom slanja podataka iz lokalne mreže svakom IP paketu se menja adresa pošiljaoca u skladu sa zadatim preslikavanjem (s leva na desno)
+- Prilikom prihvatanja podataka iz spoljne mreže svakom IP paketu se menja adresa primaoca u skladu sa zadatim preslikavanjem (s desna na levo)
+
+Loše strane NAT-a:
+- Narušena čistoća slojevitosti - rad na mrežnom sloju, a barata TCP portovima
+- Paketi mogu da se primaju samo ako je prethodno bilo poslatih paketa, zašto? (valjda jer bez prethodnog saobraćaja niko nije svestan mapiranja i kom tačno uređaju šta treba da se prosledi) 
+- Teško je, gotovo nemoguće koristiti servere preko NAT-a, valjda iz istog razloga kao teza iznad
+
+Dobre strane NAT-a:
+- Smanjuje potrebu za javnim IP adresama, dovoljna je jedna po domaćinstvu
+- Lako se instalira
+- Često ima u sebi neki vid zaštite od upada, npr. firewall
+- Pomaže i po pitanju privatnosti, zato što singl uređaj koji stoji iza neke javne zajedničke adrese ne može da se identifikuje od strane entiteta koji pokušava da nam naudi, a takođe i ukoliko bismo pokušali da pristupimo nekom nelegalnom sadržaju npr. sa Matf mreže, ceo fakultet bi bio upozoren, a ne pojedinačni korisnik
+
+## 31. Rutiranje, mehanizmi alokacije protoka, modeli isporuke, ciljevi rutiranja, principi dizajna algoritama rutiranja, rutiranje sa najkraćim putevima (najmanjim troškom), Dajkstrin algoritam.
+
+### Mehanizmi alokacije protoka
+
+Alokacija protoka je ključni aspekt rutiranja. Rutiranje alocira protok tako da ima na umu otkaze čvorova.
 
 | Mehanizam | Vreme reakcije/adaptacije |
 |-----------|---------------------------|
@@ -1521,3 +1646,74 @@ Kako ruteri koriste tabele rutiranja u kojima je preslikavanje između IP adresa
 | Rutiranje | Minuti/otkazi čvorova |
 | Oblikovanje protoka | Sati/opterećenje mreže |
 | Rezervacija protoka | Meseci/korisnici mreže |
+
+Rezervacija protoka je više pravno-ekonomska stvar dogovora između korisnika i provajdera, koliko korisnik plaća za protok na mesečnom nivou i slično. Može da se desi da u slučaju loše pokrivenosti jednog provajdera saobraćaj koji prolazi kroz uređaje drugog biva naplaćen dodatno. Ukoliko provajderi imaju sličnu pokrivenost, tada obično propuštaju saobraćaj jedni drugih, a na kraju meseca se samo plaća razlika od strane onog čijeg je saobraćaja bilo više.
+
+Što se oblikovanja protoka tiče, provajderi uglavnom rade interne statistike o tome nad grupama korisnika, i na osnovu njih zaključuju koliki protok je potreban u koje doba dana kog dana u nedelji. U skladu sa tim redukuju svoje troškove jer se nekada neki ruteri mogu ugasiti ili prištedeti na struji. 
+
+Rutiranje - ono čime se mi dalje bavimo, automatska stvar od strane rutera. Otkazi čvorova se dešavaju na nivou minute, pa samim tim i ruteri moraju u tom okviru da odreaguju. Ruteri moraju biti spremni da preračunaju svoje putanje u tim slučajevima.
+
+Rutiranje osetljivo na opterećenje - ukoliko želimo da poboljšamo performanse sistema. U ovom slučaju odluke se prave vrlo brzo, i uglavnom je vezano za isporučivanje sadržaja korisnicima u realnom vremenu. 
+
+### Modeli isporuke
+
+Različiti algoritmi rutiranja za različite modele:
+
+<p align="center"> <img alt="idk" width=500 src="resources/cast.png"/> </p>
+
+1. Unicast - šalje se sadržaj jednom krajnjem korisniku
+2. Broadcast - jedan čvor šalje svim čvorovima mreže, npr. digitalna televizija koja ide preko interneta, bilo bi baš neefikasno kada bi N puta primenila unicast, koriste se razni mehanizmi keširanja, ruteri imaju keširanu neku količinu statičkog sadržaja kako bi se smanjio broj prolazaka 
+3. Multicast - slično kao broadcast, ali namenjen za ne tako veliku grupu ljudi, npr. video konferencije. Moramo paziti kojim modelom isporučujemo podatke zbog trošenja saobraćaja (koji neko plaća!) ili struje.
+4. Anycast - podseća na stari manuelni mehanizam, npr. kada na nekom sajtu biramo sa kog servera ćemo preuzeti sadržaj (ponuđene su nam države, pa mi biramo najbližu). U ovom slučaju se ovo procenjuje dinamički, ne određujemo mi, nego on sam procenjuje odakle nam sadržaj dolazi.
+
+### Ciljevi rutiranja
+
+Redom po bitnosti:
+
+| Svojstvo | Značenje |
+|----------|----------|
+|Tačnost|Pronalazi putanju koja radi i definitivno dostavlja sadržaj tamo gde treba|
+|Efikasnost|Racionalno troši protok|
+|Ravnopravnost|Podjednaka prava čvorova, ne izgladnjuju se neki čvorovi, neće se desiti da neki sadržaj ostane na čekanju satima, dok drugi prolazi ležerno za nekoliko milisekundi, ovo treba shvatiti sa rezervom, uvek će biti nešto prioritizovano u odnosu na nešto drugo, ali sve u granicama normale :)|
+|Brza konvergencija|Brz oporavak nakon promena (otkaza ili priključivanja novih čvorova)|
+|Skalabilnost|Radi dobro i kada mreža (broj čvorova, veza) raste|
+
+### Principi za dizajn algoritama rutiranja
+
+- Decentralizovani i distribuirani
+  1. Čvorovi su ruteri, ne razmatramo korisničke računare i rutiranje u okviru lokalnih mreža jer je taj vid rutiranja trivijalan. Kada podatak dođe do poslednjeg rutera, prosleđivanje ka korisničkom računaru razmatra sloj veze.
+  2. Svi čvorovi su ravnopravni, nema bitnijih čvorova.
+  3. Čvorovi saznaju ukupno stanje mreže tako što razmenjuju poruke sa susedima.
+  4. Čvorovi rade konkurentno.
+  5. Mogu se desiti otkazi čvorova i veza ili gubljenje poruka.
+
+### Rutiranje sa najkraćim putevima
+
+Dakle, na osnovu 1., kada opisujemo internet mrežu grafom, ne uzimamo u obzir lokalne mreže. S druge strane, ruteri su međusobno ispovezivani i tu postoji način da se naprave jako dobre putanje. Nama je cilj da nađemo optimalnu putanju nekom funkcijom cilja. Prvo definišemo koji put je najbolji, najkraći, najjeftiniji, najmanje kašnjenja, ili neka kombinacija? 
+
+Svaki graf ima sebi pridruženu matricu troškova, tj. postoji funkcija koja preslikava svaku granu u njenu težinu, dakle težinski graf. Ti troškovi mogu da budu bilo šta od ovih gore pomenutih stvari.
+
+Želimo da odredimo najkraće puteve od jednog rutera do svih ostalih zato što je cilj rutiranje koje dati ruter sprovodi, a ne neko centralizovano rutiranje, tj. ne postoji oblak sa kojim komuniciraju svi ruteri gde se nalaze svi mogući najkraći putevi. Kada bi taj oblak postojao, više bi se isplatio Flojd Varšal algoritam, a ovako ipak koristimo Dajkstrin algoritam.
+
+### Dajkstrin algoritam
+
+Pretpostavimo da je graf neusmeren (paketi u oba smera), kao i da ima simetrične troškove.
+
+Dajkstrin algoritam se oslanja na činjenicu da su segmenti optimalnih puteva takođe optimalni putevi - princip optimalnosti, dokazuje se indukcijom ili pretpostavljanjem suprotno. Pretpostavljanje suprotno je ono kad npr. imamo put ABCDE koji je optimalan, a pretpostavimo da postoji drugi bolji put od A do npr. C, što ako postoji znači da bi sam taj put trebalo da bude uključen u optimalan, a nije, tako da je kao dokazano da je to tako.
+
+Rezultat Dajkstrinog algoritma je drvo. Prirodno se nameće tehnika dinamičkog programiranja i blago superlinearna (polinomijalna) složenost.
+
+1. Postavimo sve čvorove kao privremene
+2. Postavimo aktuelne udaljenosti između zadatog čvora i svih čvorova:
+    - na vrednost 0 ako je udaljenost do samog sebe
+    - na ∞ za sve ostale čvorove
+3. Dok ima privremenih čvorova:
+    - Uzmi privremeni čvor X koji ima najmanju udaljenost od zadatog čvora
+    - Izbaci X iz skupa privremenih čvorova i dodaj odgovarajuću vezu ka njemu u drvo
+    - Umanji udaljenost čvorova susednih sa X u skladu sa novododatom udaljenošću
+
+`Dat je primer na slajdovima kako se radi, ali učili smo to do sad iz 7 predmeta, ponovite ako se ne sećate.`
+
+Karakteristike algoritma:
+- Pronalazi puteve ka čvorovima prema rastućem poretku dužina, koristi svojstvo dekompozicije optimalnosti. U svakom koraku biramo čvor X do kog je najkraći put, ne može se desiti da put do X preko nekog kasnije čvora Y bude kraći.
+- Vreme izvršavanja zavisi od efikasnosti pronalaženja najboljeg privremenog čvora (onog do kog postoji najkraći put), može se koristiti npr. hip struktura. Složenost je veća od linearne.
