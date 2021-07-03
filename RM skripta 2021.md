@@ -117,6 +117,8 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
     - [Principi za dizajn algoritama rutiranja](#principi-za-dizajn-algoritama-rutiranja)
     - [Rutiranje sa najkraćim putevima](#rutiranje-sa-najkraćim-putevima)
     - [Dajkstrin algoritam](#dajkstrin-algoritam)
+  - [32. Rutiranje zasnovano na vektoru razdaljine](#32-rutiranje-zasnovano-na-vektoru-razdaljine)
+    - [DV rutiranje (Distance Vector Routing)](#dv-rutiranje-distance-vector-routing)
 
 
 <div style="page-break-after: always"></div>
@@ -260,7 +262,7 @@ Utvrđeno dobri načini organizovanja mreža. Apstraktni sloj, model upotrebe mr
 
 Zasniva se na tome da imamo računare koji nude neke usluge, i računare koji zahtevaju neke usluge. Serveri su obično hardverski bolje i naprednije mašine kako bi mogli da usluže veći broj klijenata (zahteva) istovremeno. Najveći deo posla se izvršava na serveru, dok se na klijentu izvršava samo prikaz (grafički deo). Dakle, aplikacije implementirane na klijentu nemaju nešto specijalnu/naprednu logiku, dok se na serveru dešavaju algoritmi koji zahtevaju jaku procesorsku moć. 
 
-Da bi klijent-server model funkcionisao, potrebno je da klijent-server sa implementacijom ne ide do nivoa bitova, priča direktno sa fizičkim slojem ili karticom, već će pričati sa slojem ispod - transportnim slojem, i koristi njegove usluge, tj. sokete. Socket API je programski interfejs - objekat - koji ima dupleks, tj. tokove podataka (input i output stream). To je mrežni API koji se koristi za pisanje svih Internet aplikacija i deo je svih poznatijih operativnih sistema. Soket postoji sa obe strane konekcije, i sa klijentske i sa serverske strane, i oba imaju odlazni i dolazni tok podataka. Socket API omogućava da se ostvari konekcija sa suprotnom stranom ne razmišljajući o aspektima ispod - bitovima, korekciji i detekciji grešaka, brzini slanja i primanja, itd. Soketi su vrlo univerzalan način razmišljanja koji se može posvetiti sa načinom komuniciranja između dva procesa. Dakle, ako bi dva procesa na istom računaru ostvarila komunikaciju, to bi izgledalo isto kao i korišćenje Socket API-ja za povezivanje na udaljeni računar. Output stream iz servera je zakačen za input stream klijenta, i obrnuto. Omogućena je pouzdana komunikacija u oba smera.
+Da bi klijent-server model funkcionisao, potrebno je da klijent-server sa implementacijom ne ide do nivoa bitova, priča direktno sa fizičkim slojem ili karticom, već će pričati sa slojem ispod - transportnim slojem, i koristi njegove usluge, tj. sokete. Socket API je programski interfejs - objekat - koji ima dupleks, tj. tokove podataka (input i output stream). To je mrežni API koji se koristi za pisanje svih Internet aplikacija i deo je svih poznatijih operativnih sistema. Soket postoji sa obe strane konekcije, i sa klijentske i sa serverske strane, i oba imaju odlazni i dolazni tok podataka. Socket API omogućava da se ostvari konekcija sa suprotnom stranom ne razmišljajući o aspektima ispod - bitovima, korekciji i detekciji grešaka, brzini slanja i primanja, itd. Soketi su vrlo univerzalan način razmišljanja koji se može poistovetiti sa načinom komuniciranja između dva procesa. Dakle, ako bi dva procesa na istom računaru ostvarila komunikaciju, to bi izgledalo isto kao i korišćenje Socket API-ja za povezivanje na udaljeni računar. Output stream iz servera je zakačen za input stream klijenta, i obrnuto. Omogućena je pouzdana komunikacija u oba smera.
 
 Za strimove su zakačene različite metode, nesimetrične jer se prirodno klijent i server ne ponašaju isto. Server se ponaša pasivno, a klijent aktivno. Klijent inicira komunikaciju, a server nikad samoinicijativno ne šalje zahtev. Ideja je da se server kreira, podesi i počne da radi, i čeka da se nešto desi, dok klijent čim se kreira treba da se zakači negde.
 
@@ -430,7 +432,7 @@ Svojstva kojima se opisuje svaki komunikacioni kanal:
 #### Kašnjenje
 
 Ukupno kašnjenje podrazumeva vreme potrebno da poruka stigne sa polazne adrese na ciljnu adresu, odnosno od pošiljaoca do primaoca. Kašnjenje ima dve bitne komponente:
-- **kašnjenje prenosa (transmission delay)** - vreme potrebno da se M-bitovna poruka postavi na komunikacioni kanal. Vezano je sa količinom informacija koje šaljemo i sa brzinom prenosa komunikacionog kanala. Dakle, ako imamo malu brzinu prenosa u komunikacionom kanalu, a šaljemo veliku poruku, prirodno je da će vreme trajanja prenosa biti duže. Kašnjenje prenosa računamo kao <p align="center"> <img alt="T-delay" width=350 src="resources/t-delay.png"/> </p> to jest tako što dužinu poruke (M) izraženu u bitovima (b) delimo sa brzinom komunikacionog kanala (B) izražene u bitima po sekundi (b/s). Možemo ga shvatiti kao apsorpcionu moće komunikacionog kanala, tj. koliko informacija on može da uhvati.
+- **kašnjenje prenosa (transmission delay)** - vreme potrebno da se M-bitovna poruka postavi na komunikacioni kanal. Vezano je sa količinom informacija koje šaljemo i sa brzinom prenosa komunikacionog kanala. Dakle, ako imamo malu brzinu prenosa u komunikacionom kanalu, a šaljemo veliku poruku, prirodno je da će vreme trajanja prenosa biti duže. Kašnjenje prenosa računamo kao <p align="center"> <img alt="T-delay" width=350 src="resources/t-delay.png"/> </p> to jest tako što dužinu poruke (M) izraženu u bitovima (b) delimo sa brzinom komunikacionog kanala (B) izražene u bitima po sekundi (b/s). Možemo ga shvatiti kao apsorpcionu moć komunikacionog kanala, tj. koliko informacija on može da uhvati.
 - **kašnjenje propagacije (propagation delay, ping)** - vreme potrebno da bitovi prođu kroz komunikacioni kanal. Ne zavisi od brzine prenosa ili manipulacija veličinama poruka, već je inherentna karakteristika komunikacionog kanala i posledica gornje fizičke granice - brzine svetlosti. Svi moderni komunikacioni sistemi su zasnovani na elektromagnetnim talasima čija je brzina kretanja reda veličine brzine svetlosti, odnosno između <sup>2</sup>/<sub>3</sub>c i c (zavisi da li je u pitanju WiFi, optika...). Dakle, kašnjenje propagacije je neminovno i primetno je prilikom slanja na veće daljine. Računamo je kao <p align="center"> <img alt="P-delay" width=450 src="resources/p-delay.png"/> </p> gde je brzina signala u opsegu (<sup>2</sup>/<sub>3</sub>c, c)
 - **ukupno kašnjenje** dobijamo sabiranjem pomenuta dva: <p align="center"> <img alt="Delay" width=250 src="resources/delay.png"/> </p>
   
@@ -462,7 +464,7 @@ Ono što je bitno napomenuti i imati u vidu je da se ping odnosi samo na inicija
 
 Predstavlja umnožak protoka i kašnjenja. Prosto rečeno - koliko smo popunili komunikacioni kanal, tj. količina podataka prisutnih na kanalu u nekom momentu. Ako bismo posmatrali podatak kao materiju, onda je ovo zapremina materije. Meri se u bitovima. Mali je za kanale u lokalnim mrežama, npr. WiFi, a veliki za "velike debele" (long fat networks, sa BDP-om većim od 10<sup>5</sup> bitova) kanale.
 
-BDP = B x D, gde je B vreme zadržavanja na komunikacionom kanalu, a D propusni opseg.
+BDP = B x D, gde je B propusni opseg, a D vreme zadržavanja na komunikacionom kanalu.
 
 #### BDP primer
 
@@ -1717,3 +1719,27 @@ Rezultat Dajkstrinog algoritma je drvo. Prirodno se nameće tehnika dinamičkog 
 Karakteristike algoritma:
 - Pronalazi puteve ka čvorovima prema rastućem poretku dužina, koristi svojstvo dekompozicije optimalnosti. U svakom koraku biramo čvor X do kog je najkraći put, ne može se desiti da put do X preko nekog kasnije čvora Y bude kraći.
 - Vreme izvršavanja zavisi od efikasnosti pronalaženja najboljeg privremenog čvora (onog do kog postoji najkraći put), može se koristiti npr. hip struktura. Složenost je veća od linearne.
+
+## 32. Rutiranje zasnovano na vektoru razdaljine
+
+Želimo da vidimo kako se Dajkstrin algoritam ponaša u visokodimenzionom okruženju, odnosno kako se ponaša na internetu, kakve su mu performanse i načini realizacije tako da radi u tom distribuiranom, kompleksnom i vremenski zahtevnom okruženju.
+
+### DV rutiranje (Distance Vector Routing)
+
+Predstavlja distribuiranu verziju Dajkstrinog algoritma, a distribuirana verzija nekog algoritma u suštini znači da provereno daje ispravan izlaz kada se izvrši distribuirano. Način na koji se algoritam distribuira nije uvek intuitivan, ali korak po korak možemo da vidimo zašto radi korektno.
+
+Ovaj algoritam se koristio u praksi u vreme Arpaneta. Zasniva se na razmeni vektora (tabela) razdaljine između susednih čvorova. Ti vektori su sadržali saznanja trenutnog čvora o svetu oko sebe, ti vektori cirkulišu čvorovima i na osnovu toga svaki ažurira svoja interna saznanja. U praksi se sada retko koristi.
+
+Kada pričamo o distribuiranim algoritmima, treba da u startu odbacimo misao o tome da imamo neku centralizovanu obradu ili centralizovan repozitorijum gde se čuvaju podaci. Ova distinkcija je bitna, jer kad bismo imali centralizovanu obranu stvorili bismo usko grlo u slanju podataka centralnom entitetu, kao i primanju istih, a isto to važi i za dovlačenje i slanje podataka nekom centralnom repozitorijumu. Dakle, kod distribuiranih algoritama cilj je da razdelimo i memoriju i procesorsku snagu, da se ništa ne dešava na jednom mestu. 
+
+Na početku ovog algoritma imamo čvorove koji nemaju nikakva znanja, već samo imaju neku procesorsku moć i mogu da uoče svoje najbliže susedstvo, što su u stvari ruteri kojih su oni svesni. Kada zamišljamo mrežu kao graf, većina čvorova će biti povezano samo sa svojim najbližim susedima, što je mali broj čvorova u odnosu na celu mrežu. Dakle, svaki ruter je svestan troška koji se tiče njegovih suseda. 
+
+Iterativno i tranzitivno čvorovi proširuju svoj domen znanja. Svaki čvor radi sledeće:
+
+1. Inicijalizuje udaljenost do samog sebe na 0, i udaljenost ka svim ostalim ciljnim čvorovima na ∞.
+2. Periodično šalje svoj vektor ka susedima
+3. Preračunava svoj vektor udaljenosti na osnovu vektora dobijenih od svojih suseda
+
+Primer:
+
+- 
