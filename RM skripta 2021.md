@@ -124,6 +124,20 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
   - [34. Rutiranje zasnovano na stanju veza (Link state routing)](#34-rutiranje-zasnovano-na-stanju-veza-link-state-routing)
   - [35. Višeciljno rutiranje sa najkraćim putevima (ECMP)](#35-višeciljno-rutiranje-sa-najkraćim-putevima-ecmp)
   - [36. Hijerarhijsko rutiranje](#36-hijerarhijsko-rutiranje)
+- [Transportni sloj](#transportni-sloj)
+  - [37. Transportni sloj, uloga, tipovi servisa i njihovo poređenje](#37-transportni-sloj-uloga-tipovi-servisa-i-njihovo-poređenje)
+    - [Uloga](#uloga-2)
+    - [Tipovi servisa i njihovo poređenje](#tipovi-servisa-i-njihovo-poređenje)
+  - [28. Socket API, primer jednostavnog klijent-servera (pseudokod), portovi](#28-socket-api-primer-jednostavnog-klijent-servera-pseudokod-portovi)
+    - [Socket API](#socket-api)
+    - [Primer jednostavnog klijent-servera (pseudokod)](#primer-jednostavnog-klijent-servera-pseudokod)
+    - [Portovi](#portovi)
+  - [39. UDP](#39-udp)
+  - [40. Uspostava i prekid veze na transportnom sloju (uopšteno)](#40-uspostava-i-prekid-veze-na-transportnom-sloju-uopšteno)
+    - [Uspostava veze](#uspostava-veze)
+    - [Prekid veze](#prekid-veze)
+  - [41. Protokoli kliznih prozora na transportnom sloju](#41-protokoli-kliznih-prozora-na-transportnom-sloju)
+  - [42. Kontrola toka podataka na transportnom sloju](#42-kontrola-toka-podataka-na-transportnom-sloju)
 
 
 <div style="page-break-after: always"></div>
@@ -1865,4 +1879,238 @@ Postoje:
 * Vidljivi ruteri na internetu kojih su svesni ostali ruteri i koji se predstavljaju nekim svojim IP prefiksom
 * Prikriveni ruteri koji služe samo da rutiraju saobraćaj u konkretnoj podmreži, tj. unutar prefiksa iza kojih su sakriveni - za slučaj da oni šalju nešto ka ostatku interneta, šalju na samo jedan konkretan izlazni ruter - podmreže.
 
+<p align="center"> <img alt="idk" width=500 src="resources/podmreze.png"/> </p>
+
 Suprotan proces je sažimanje, a to je kad na jedan ruter stiže saobraćaj koji kasnije treba da se raspodeli Moguće je i spoljnje sažimanje nepovezanih ustanova, čime se obično bavi ISP.
+
+<p align="center"> <img alt="idk" width=500 src="resources/sazimanje.png"/> </p>
+
+
+# Transportni sloj
+
+## 37. Transportni sloj, uloga, tipovi servisa i njihovo poređenje
+
+### Uloga
+
+Transportni sloj omogućava efikasnu i kvalitetnu komunikaciju između dva krajnja korisnika, pri čemu su ta dva korisnika procesi, a ne računari na mrežnom sloju. Ako pričamo o mrežnom sloju, identifikator za strane koje komuniciraju je bio IP adresa koja predstavlja ceo računar/uređaj. Kada pričamo o transportnom sloju, u okviru jednog računara može biti više tačaka koje komuniciraju jer svaki proces na računaru može predstavljati krajnju tačku. Ovde pričamo o virtuelnoj mreži iznad fizičke mreže (uspostavljene topologijom hardvera), dakle ovde pričamo o topologiji u kojoj su čvorovi softverski interpretirani, pa je mreža i dosta gušća. 
+
+Što se tiče identifikacije ovih tačaka - formira se kompozitni ključ koji se sastoji iz IP adrese i porta.
+
+Ono što transportni sloj dobija sa aplikativnog sloja (sloja iznad) je smislena poruka za krajnjeg korisnika, npr. http poruka. Jedinica informacije u transportnom sloju je segment, i on će sadržati u sebi tu poruku. Segmenti se na daljim slojevima ugrađuju u pakete, a paketi u okvire.
+
+### Tipovi servisa i njihovo poređenje
+
+Do sada smo pominjali dva tipa servisa - nepouzdani (UDP) i virtuelno kolo. 
+
+U transportnom sloju su podržana dva tipa, ali se mogu realizovati i drugačija rešenja - datagrami (UDP) i tokovi (TCP).
+
+* TCP - ozbiljno razrađen mehanizam, ne predstavlja nadogradnju virtuelnog kola
+* UDP - praktično koristi datagram iz mrežnog sloja
+
+|TCP (tokovi)|UDP (datagrami)|
+|------------|---------------|
+|Ostvarivanje veze|Veza se ne ostvaruje|
+|Bajtovi se isporučuju jednom, pouzdano i po redu|Poruke se mogu izgubiti, pomešati, duplirati|
+|Proizvoljna dužina toka|Ograničena dužina poruke (mora se unapred dogovoriti)|
+|Kontrola toka se prilagođava pošiljaocu i primaocu|Šalje se bez obzira na stanje primaoca|
+|Kontrola zagušenja se prilagođava stanju mreže|Šalje se bez obzira na stanje mreže|
+
+## 28. Socket API, primer jednostavnog klijent-servera (pseudokod), portovi
+
+### Socket API
+
+Socket API je na transportnom sloju, iako se često naziva Network API pa se to povezuje sa mrežnim slojem. Reč je o programskim primitivama i funkcionalnostima koje se tiču komunikacije između procesa, a ne računara. Deo je svih bitnih operativnih sistema i standardnih programskih jezika. Takođe, socket API podržava i tokove i datagrame.
+
+Socket API se oslanja na sokete, a soketi su programske apstrakcije/objekti/tokovi podataka kojima je pridružen broj - port. Svrha pravljenja soketa (utičnica) je direkciona/bidirekciona komunikacija sa drugim soketima. Dva računara (to jest dva procesa u okviru tih računara, mogu i dva procesa na istom, ali štagod) koja komuniciraju će napraviti soket objekte/strukture podataka i u njih ugraditi sve potrebne informacije za momentalnu komunikaciju između dva procesa. Ono što će biti omogućeno dalje postojanjem ovih objekata je tok podataka koji će izlaziti iz jednog soketa, a ulaziti u drugi, i obrnutno, što kreira puni dupleks, uz pomoć drugih struktura podataka i objekata za čitanje i pisanje koji postoje u tom programskom jeziku. Osnovne operacije koje su implementirane nad soket objektima:
+
+|Operacija|Značenje|
+|---------|--------|
+|SOCKET|Kreira krajnju komunikacionu tačku|
+|BIND|Na serveru, pridružuje soket lokalnoj adresi i portu, pridružuje datom procesu odgovarajući port|
+|LISTEN|Na serveru, najavljuje spremnost za prihvatanje dolaznih zahteva za vezu|
+|ACCEPT|Na serveru, pasivna uspostava veze sa tačkom koja šalje zahtev|
+|CONNECT|Na klijentu, aktivno pokušavanje za uspostavom veze|
+|SEND (TO)|Slanje podataka preko soketa|
+|RECEIVE (FROM)|Primanje podataka preko soketa|
+|CLOSE|Gašenje soketa|
+
+Server ima pasivnu ulogu - čeka da mu se klijenti obrate, a klijenti imaju aktivnu - iniciraju komunikaciju. Preslikavanje između portova i procesa bi trebalo da bude bijekcija kako ne bi došlo do zabune prilikom dolaznog saobraćaja.
+
+TO i FROM kod SEND i RECEIVE nije neophodno kod tokova podataka, već samo kod datagram paketa, dok se LISTEN/ACCEPT koriste samo kod tokova.
+
+### Primer jednostavnog klijent-servera (pseudokod)
+
+`TODO: UDP i TCP pseudokod`
+
+### Portovi
+
+Proces identifikator se ne koristi kao spoljni identifikator na internetu zato što je manipulacija njima zavisna od OS-a, i hendluje ih na interni način. Želimo da aplikacije sa interneta komuniciraju i povezuju se na druge aplikacije (procese) na standardan način, što omogućavamo određivanjem standardnih portova za standardne aplikacije, npr. web server se obično nalazi na portu 80 ili 8080.
+
+Procesi se identifikuju uređenom trojkom: IP adresa, protokol, port. Portovi su 16-bitni pozitivni celi brojevi. Serveri se obično povezuju za portove sa vrednostima <1024, dok klijenti obično koriste nasumične portove koje bira OS i koriste se privremeno. Nasumični portovi klijenta ne moraju biti opšte poznati jer ih niko ne "cilja".
+
+
+Neki opšte-poznati portovi:
+
+|Port|Protokol|Namena|
+|----|--------|------|
+|20, 21|FTP|Prenos datoteka|
+|22|SSH|Udaljeni pristup|
+|25|SMTP|Slanje i primanje elektronske pošte|
+|80|HTTP|Pristup WWW|
+|110|POP-3|Primanje elektronske pošte (klijenti)|
+|143|IMAP|Primanje elektronske pošte (klijenti)|
+|443|HTTPS|Sigurni HTTP|
+|543|RTSP|Prenos tokova u realnom vremenu|
+|631|IPP|Deljenje štampača|
+
+## 39. UDP
+
+Koriste programi kojima nije preterano bitna pouzdanost ili se baziraju na porukama:
+
+* Voice-over-IP - nepouzdano
+* DNS, RPC - zasnovano na porukama, ali loše zbog pouzdanosti, može da se poveća raznim tehnikama
+* DHCP - zasnovano na porukama
+
+Postoje i drugi, manje poznati protokoli u transportnom sloju, za npr. pouzdani prenos poruka. 
+
+<p align="center"> <img alt="idk" width=400 src="resources/datagram_socket.png"/> </p>
+
+Što se tiče stizanja podataka, oni stižu od mrežnog sloja u vidu paketa transportnom sloju. Paketi stoje u redu čekanja na ulazu u transportni sloj na (de)multiplekseru i raspoređuju se u bafere, gde je svaki bafer dodeljen po jednom portu, a port se preslikava na odgovarajući proces. U baferima se akumuliraju podaci koji stižu na jedan port i neophodni su jer podaci često ne mogu da se prime istom brzinom kojom stižu.
+
+UDP zaglavlje - vrlo jednostavno.
+
+* koristi port za prepoznavanje procesa
+* veličina datagrama do 64k
+* kontrolni zbir je 16 bita
+
+Dodatne informacije koje se kače na IP paket mrežnog sloja:
+
+<p align="center"> <img alt="idk" width=400 src="resources/udp_header.png"/> </p>
+
+UDP je u principu prilično jednostavan i oslanja se na korišćenje datagramskog protokola uz dodavanje određenih informacija da bi se identifikovali procesi na ciljnom računaru.
+
+## 40. Uspostava i prekid veze na transportnom sloju (uopšteno)
+
+### Uspostava veze
+
+Uspostava veze kod TCP protokola je neophodna da bi obe strane bile svesne da komuniciraju, dakle prilikom slanja podataka ne mora svaki put da se navodi kome se šalju, već je to unapred dogovoreno. Dve strane se moraju dogovoriti o skupu parametara, npr. maksimalna veličina segmenta.
+
+Uspostava veze podrazumeva:
+
+* Podešavanje stanja krajnjih čvorova
+* Poput "pozivanja" prilikom telefonskog razgovora
+* Strane takođe treba da usaglase početne brojeve segmenata kako bi se dalje mogao implementirati protokol kliznih prozora
+* Klizni prozori se ovde koriste između krajnjih tačaka, dok su se kod sloja veze koristili između susednih tačaka
+
+Da bi se ostvarila konkretnija komunikacija koristi se sistem trofaznog rukovanja koji se sastoji iz tri faze:
+
+1. Klijent pošalje segment SYN(x), gde je x=početni redni broj segmenta, obično slučajan broj iz nekog opsega
+2. Server odgovara - šalje broj koji sledeći put očekuje i šalje svoj početni broj, kao i potvrdu ACK koja govori da je primio klijentsku poruku: SYN(y), ACK=x+1
+3. Klijent potvrđuje broj ACK(y+1)
+
+<p align="center"> <img alt="idk" width=300 src="resources/trofazno.png"/> </p>
+
+SYN segmenti se ponovo šalju ako se izgube. Odlučeno je da potvrde ACK budu broj + 1. `¯\_(ツ)_/¯`
+Dok se dešava ta komunikacija između klijenta i servera, redni brojevi segmenata počinju od x i y i uvećavaju se za 1 svakim slanjem (valjda).
+
+Razlog iz kog se ne koriste redni brojevi od jedinice svaki put, već nasumični, je: pretpostavimo da su se desili kašnjenje i retransmisija, tada bi potencijalno stigli zakasneli duplikati od strane klijenta. Cilj ovakvih rednih brojeva je da se spreči da server potvrdi neki zahtev za konekciju koji je zastareo i više nije relevantan. Ovi brojevi se biraju nasumično, razlikuju se i obično su iz nekog velikog opsega, npr. 32 bita.
+
+`Ako nekome nije jasno ovo, otprilike je 37. minut snimka.`
+
+Šansa da server odgovori na pogrešnu konekciju i dalje nije 0, ali je toliko mala da je to ok, da bi se to desilo morao bi klijent za dve uzastopne konekcije da izabere isti broj.
+
+Kada klijent i server dođu do limita sa brojačem, primenom modularne aritmetike se ponovo kreće od istog broja.
+
+### Prekid veze
+
+Primer nemogućeg problema (Kartelj voli ovaj primer):
+
+<p align="center"> <img alt="idk" width=300 src="resources/brda_vojske.png"/> </p>
+
+P1 i P2 vojske imaju po 50k ljudi, C vojska 80k. P1 i P2 moraju da se dogovore da napadnu u isto vreme kako bi pobedili, ali tako da budu 100% sigurni da je druga strana primila poruku i da je dogovor zaključen, jer u bilo kom trenutku u tom procesu messenger može da bude zarobljen u uvali od strane vojske C i ne prenese ono što je trebalo. Ono što se dešava: P1 šalju vojsci P2 da se napad dešava ujutru i čekaju ACK, inače neće napasti. Poruka može da se izgubi, ili da se izgubi ACK, tako da i P2 vojska očekuje ACK da je njihov ACK primljen, a taj ACK takođe može da se izgubi, itd.... i tako u beskonačnost.
+
+Što se prekida veze tiče:
+
+* Obe strane treba da prekinu vezu i da budu svesne da su istovremeno prekinule vezu - što je slično opisanom problemu
+* Bitno je da se izbegne situacija da se jedna strana zatvori, a druga ne, da ne bismo imali zombi konekcije i uzalud slali podatke
+* Jedna strana je uvek inicijator prekida (aktivna), a druga pasivna
+* Ne mora klijent biti aktivna strana, može i server da zahteva prekid
+
+Odvija se u dva koraka:
+
+1. Aktivni šalje FIN(x), pasivni potvrđuje sa ACK(x+1)
+2. Pasivni šalje FIN(y), aktivni potvrđuje sa ACK(y+1)
+
+FIN se ponovo šalju ako se izgube. Svako gasi svoju stranu veze nakon slanja FIN i dobijanja ACK za isti. Dakle, iniciranje i potvrđivanje su razdvojeni. 
+
+<p align="center"> <img alt="idk" width=300 src="resources/con_stop.png"/> </p>
+
+## 41. Protokoli kliznih prozora na transportnom sloju 
+
+U sloju veze, ovi protokoli su se odnosili na prenos podataka kroz kabla između dva susedna čvora. U ovom slučaju omogućavaju prenos između krajnjih tačaka bilo gde na internetu.
+
+Povećana pouzdanost na nižim nivoima doprinosti efikasnosti na višim nivoima, ali te mehanizme nije nužno imati na nižim. U ekstremnom slučaju, sve bi moglo da se radi na transportnom: kontrola toka, provera grešaka... Ovo bi bilo manje efikasno, zašto?
+
+Postoji dosta varijacija ovih protokola, u zavisnosti od:
+
+* baferisanja
+* potvrđivanja poruka
+* retransmisija
+
+Varijacije (kao i pre):
+
+1. Vrati se N - jednostavna verzija, može biti neefikasna
+2. Selektivno ponavljanje - složenije, ali efikasnije
+
+Zajedničko za sve je da od aplikativnog sloja dobijaju segmente po redu, kao i da aplikativnom sloju šalju segmente po redu.
+
+**Klizni prozori - pošiljalac**
+
+Pošiljalac baferiše najviše W segmenata dok ne stignu potvrde za njih.
+
+* LFS=poslednji poslat segment
+* LAR=poslednji potvrđeni segment pre koga su svi potvrđeni
+  
+Šalje dok god je LFS – LAR $\leq$ W.
+
+**Klizni prozori – primalac, varijanta "Vrati se N"**
+
+Primalac ima bafer veličine 1, pritom čuva i vrednost promenljive - LAS=redni broj poslednjeg segmenta prosleđenog aplikativnom sloju. Nakon primanja segmenta:
+
+* ako je redni broj LAS+1, onda ga: prihvati, prosledi aplikativnom, ažurira LAS=LAS+1 i pošalje potvrdu
+* inače odbaci
+
+**Klizni prozori – primalac, varijanta "Selektivno ponavljanje"**
+
+Primalac prosleđuje aplikativnom po redu, a baferiše segmente i ako nisu po redu (bafer veličine W). Putem ACK segmenta, primalac:
+
+* potvrđuje najviši uređeni segment
+* a dodatno i šalje informaciju o segmentima koji nisu po redu
+ 
+TCP koristi ovaj pristup.
+
+`Za ovo pitanje bukv ništa detaljnije od ovoga nije pričao, neke delove sa prezentacija je i preskočio jer smo "radili to ranije". Ti delovi su svakako ovde, ali bez dodatnih objašnjenja jer ih nije ni bilo.`
+
+**Klizni prozori – primalac, varijanta "Selektivno ponavljanje"**
+
+Baferiše W segmenata, održava stanje promenljive LAS, prihvata ako je iz opsega [LAS+1, LAS+W] i pritom:
+
+* Baferiše segmente iz opsega[LAS+1, LAS+W] 
+* Prosleđuje aplikativnom sloju ako stigne segment sa brojem LAS+1 i pritom ažurira LAS=LAS+1
+* Šalje potvrdu
+
+**Klizni prozori - retransmisije**
+
+* "Vrati se N" pošiljalac ima jedan tajmer, kada istekne, ponovo šalje sve baferisane segmente počev od LAR+1
+* "Selektivno ponavljanje" pošiljalac ima tajmer za svaki nepotvrđeni segment, po isteku, šalje ponovo, u proseku radi manje retransmisija
+
+## 42. Kontrola toka podataka na transportnom sloju
+
+Izazov neusaglašenosti brzine slanja i primanja podataka. Pričamo o bidirekcionoj komunikaciji - brzina komunikacije se usaglašava sa brzinom sporijeg (download i upload kao direkcione su nebitne sad).
+
+Brzine ne moraju nužno biti vezane za download/upload brzine koje dobijamo od provajdera, nego i za brzinu samog softvera na aplikativnom sloju.
+
+Kod protokola kliznih prozora uvodi se još jedan mehanizam na osnovu dodatne informacije - WIN, koja služi da jedna strana govori drugoj dostupno stanje bafera, gde je WIN broj dostupnih mesta u baferu. Razlog za to je što podaci ne mogu da se prime/obrade dovoljno brzo, pa je potrebno da se negde privremeno skladište.
+
+Baferi se obično realizuju primenom FIFO mehanizma, a to se u praksi realizuje preko cirkularnog niza.
+
