@@ -119,6 +119,11 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
     - [Dajkstrin algoritam](#dajkstrin-algoritam)
   - [32. Rutiranje zasnovano na vektoru razdaljine](#32-rutiranje-zasnovano-na-vektoru-razdaljine)
     - [DV rutiranje (Distance Vector Routing)](#dv-rutiranje-distance-vector-routing)
+    - [Karakteristike](#karakteristike)
+  - [33. Plavljenje](#33-plavljenje)
+  - [34. Rutiranje zasnovano na stanju veza (Link state routing)](#34-rutiranje-zasnovano-na-stanju-veza-link-state-routing)
+  - [35. Višeciljno rutiranje sa najkraćim putevima (ECMP)](#35-višeciljno-rutiranje-sa-najkraćim-putevima-ecmp)
+  - [36. Hijerarhijsko rutiranje](#36-hijerarhijsko-rutiranje)
 
 
 <div style="page-break-after: always"></div>
@@ -1742,4 +1747,122 @@ Iterativno i tranzitivno čvorovi proširuju svoj domen znanja. Svaki čvor radi
 
 Primer:
 
-- 
+1. Udaljenosti od čvora A se inicijalno postavljaju na 0 do samog sebe i ∞ do svih ostalih 
+<p align="center"> <img alt="idk" width=500 src="resources/dv1.png"/> </p>
+1. Nakon prvog koraka svako nauči puteve dužine 1. U ovom A dobija vektor udaljenosti od B i D, koji su takođe u prvom koraku za sebe uradili isto što i A (0 od sebe i ∞ od ostalih), i uči nove puteve tako što uzima vrednosti iz B i D, računa minimum između svoje vrednosti i vrednosti iz njihovih tabela + puta od sebe do njih samih, dakle min(d(A, X), d(A, Y) + d(Y, X)), gde je X redom svaki čvor (A, B, C, D) za koji računamo udaljenost u trenutnoj tabeli (u ovom slučaju tabeli čvora A), a Y je čvor od kog smo dobili tabelu (u ovom slučaju B, D)
+<p align="center"> <img alt="idk" width=500 src="resources/dv2.png"/> </p>
+3. Sve razmene se dešavaju po istom principu za svaki čvor - svi čvorovi su naučili puteve dužine 1
+<p align="center"> <img alt="idk" width=500 src="resources/dv3.png"/> </p>
+4. Drugi krug razmene - 2 hop putevi
+<p align="center"> <img alt="idk" width=500 src="resources/dv4.png"/> </p>
+5. Treći krug razmene - 3 hop putevi
+<p align="center"> <img alt="idk" width=500 src="resources/dv5.png"/> </p>
+6. Tabela konvergira, ništa se ne menja, dakle algoritam se zaustavlja
+<p align="center"> <img alt="idk" width=500 src="resources/dv6.png"/> </p>
+
+Dakle, algoritam se završava onda kada tabela iskonvergira, to može da bude i 2 i 5 i koliko god razmena. Koliko je potrebno iteracija da bi ovo iskonvergiralo? - karakteristika grafa koja utiče na to je njegov dijametar (udaljenost između dva najudaljenija čvora), zato što da bi uopšte ta dva čvora postali svesni međusobnog postojanja, treba da se izvrši D razmena, gde D odgovara najkraćem putu između dva najudaljenija čvora.
+
+`Ovo su njegove reči, nije rekao eksplicitno zašto je pomenuo dijametar, verovatno toliko treba za konvergenciju u najgorem slučaju, a radijus utiče na najbolji?`
+
+Ali u suštini, problem sa ovim algoritmom nije tih minimalno 100 razmena koje se dese (ovih 100 je rekao da je ofrlje procenjen radijus na internetu), već to što pre nego što algoritam završi tih 100 razmena, desi se neki otkaz ili promena na mreži, tako da taj međurezultat više nije validan i algoritam postaje nestabilan. Sa rastom interneta ovaj algoritam se sve manje koristi.
+
+Dobra strana je sjajna distribuiranost, a glavna loša strana je upravo ta brzina konvergencije.
+
+### Karakteristike
+
+**Robusnost**
+
+* Dodavanje veza ili čvorova - vest putuje jedan hop po razmeni, što nije preterano brzo
+* Uklanjanje veza ili čvorova - susedi ne obavljaju više razmenu sa njim pa posle nekog vremena zaborave da postoji, može se uvesti maksimalna starost razmenjenog vektora
+* Razbijanje mreže na dva dela su ozbiljan problem - brojanje do beskonačnosti, može da se razreši, ali preskačemo taj deo, ukratko objašnjenje, ako zamislimo da algoritam ovako konvergira: <p align="center"> <img alt="idk" width=300 src="resources/inf1.png"/> </p> Može se desiti da se čvor A otkaže: <p align="center"> <img alt="idk" width=300 src="resources/inf2.png"/> </p> što bi B primetio, ali bi onda tokom razmene sa C uzeo njegovu vrednost iz tabele kao kraću, i tako bi se vrteli u krug i uzimali jedni od drugih, valjda.
+
+
+## 33. Plavljenje
+
+Standardni način realizacije algoritma broadcast modela isporuke. Potrebno je neku poruku, tj. neku informaciju koju ima jedan čvor poslati svima na internetu (ne bukvalno svima, nego nekim konkretnim javnim ruterima) u najkraćem mogućem roku. Jednostavan mehanizam i brz u smislu pristizanja informacija, ali ne preterano efikasan u smislu zauzimanja protoka. 
+
+Protokol nalaže pravilo na svakom čvoru - nakon pristizanja poruke prosledi je svim ostalim susedima osim onom od kog si dobio poruku.
+
+Neefikasno jer jedan čvor može da dobije višestruke kopije iste poruke u bilo kojoj topologiji koja nije drvo. Što je veći stepen grafa, to će broj duplikata poruka koje se vrte da raste eksponencijalno.
+
+`Postoji ilustrovan primer od 42. slajda, ali nisam ubacivala jer je trivijalan, ko misli da mu treba neka pogleda.`
+
+Algoritam unapređujemo tako da rešimo ovaj problem - kada neki čvor dobije neki podatak potrebno je da se zapamti da je taj podatak već pristigao tu, tako da ako ponovo stigne ne prosleđuje se dalje susedima. Mogli bismo i da izbacimo to jedno redundantno slanje tako što pamtimo iz prethodnog čvora kome smo šta poslali, ali taj jedan korak nije toliko strašan i ono prvo je elegantnije rešenje.
+
+Kako čuvamo informacije o pristiglim porukama? Mogli bismo da čuvamo listu sa svim primljenim porukama sa kompozitnim ključem svake (npr. id pošiljaoca + id sesije + redni broj paketa). Ovo je problematično jer se kroz mrežu šalju milioni poruka, tako da bi su memorijski zahtevi za tu listu ogromni.
+
+Ono što se obično radi u praksi je da se čuva samo poslednji redni broj za zadatu IP adresu pošiljaoca. To jest, kada stigne neki podatak koji je u tom modelu isporuke plavljenja, gledamo koja je IP adresa pošiljaoca, ako jeste proveravamo da li on ima broj koji je prethodni redni broj + 1. Ako jeste, onda ga prihvatamo i to je validan podatak koji prosleđujemo dalje i redni broj povećavamo za jedan. Na ovaj način onemogućavamo pravljenje rupa u sekvenci, tj. prihvatamo samo podatke koji su za 1 veći od prethodnog, a možemo i informaciju o svim pristiglim paketima do sad da smestimo u jedan broj, što je dosta elegantno i memorijski nezahtevno.
+
+`Na slajdovima piše da može i da se implementira tako što se prihvata samo ako poruka ima viši redni broj, kao i da se može omogućiti ARQ kako bi plavljenje bilo pouzdanije, ali on nije pričao o tome.`
+
+## 34. Rutiranje zasnovano na stanju veza (Link state routing)
+
+Plavljenje ulazi u sastav ovog algoritma na neki način, tj. link state routing koristi prethodno uvedene koncepte. Značajno je drugačiji od DV rutiranja. Sastoji se iz dve faze:
+
+1. Čvorovi plave mrežu informacijama o svojoj lokalnoj topologiji (susedima), svaki čvor je tako u stanju da rekonstruiše celokupnu topologiju, to jest svaki ruter šalje celom relevantnom skupu rutera na internetu o svojoj lokalnoj topologiji. Znači, ne o tranzitivnim vrednostima, nego samo informacije o susedima sa kojima je povezan, npr. optičkim kablom. Mreža biva preplavljena tim paketima, svako šalje svima sve, zbog toga je bitno poznavati karakteristike ovog algoritma (jako brz što se tiče stizanja podataka jer stižu najkraćim putem, a to je sigurno jer se prolazi kroz sve puteve, podatak stiže najkraćim, ostali koji stignu posle se odbacuju). Brzina je bitna zbog drugog koraka i preračunavanja najkraćih puteva, jer što brže čvorovi postanu svesni otkaza nekog čvora, to će brže ažurirati svoju tabelu rutiranja.
+2. Svaki čvor računa svoju tabelu prosleđivanja, što može da se postigne npr. Dajkstrinim algoritmom. Svi su dobili parcijalne informacije o celoj mreži i svaki čvor radi rekonstrukciju grafa. Pošto imamo tabele lokalnog susedstva za svaki čvor, možemo linearnim algoritmom formirati kompletan graf. Onda se Dajkstrinim ili nekim drugim algoritmom računaju udaljenosti iz svakog čvora i ažurira se tabela rutiranja.
+
+**Reagovanje na greške**
+
+Otkazi mogu da se dese i na čvorovima i na vezama, i za ovaj algoritam je nebitno šta je od ta dva u pitanju. Kada se prekine veza sa nekim čvorom, čvorovi koji su mu direktni susedi imaju informaciju o tome i plave sa novim LSP. 
+
+**Dodavanje čvora ili veze**
+
+Susedni čvorovi će detektovati i ažurirati svoje LSP. Nakon plavljenja ubrzo će svi znati novu topologiju.
+
+**DV-LS poređenje**
+
+Konvergencija:
+* LS - brzo jer je plavljenje brzo, Dajkstra malo spor, ali božemoj
+* DV - spor, najbolji putevi na daljini K tek u K-toj razmeni
+
+Skalabilnost:
+* DV - odlična, čvorovi računaju rešenje potproblema
+* LS - korektna, svaki čvor računa rešenje celog problema, može se nadomestiti boljom opremom
+
+## 35. Višeciljno rutiranje sa najkraćim putevima (ECMP)
+
+Priliko izvršavanja Dijsktre ne dodajemo samo jednu granu u put, već dodajemo sve moguće najbolje puteve. 
+
+<p align="center"> <img alt="idk" width=300 src="resources/ecmp.png"/> </p>
+
+
+* ABE = 4 + 4 = 8
+* ABCE = 4 + 2 + 2 = 8
+* ABCDE = 4 + 2 + 1 + 1 = 8
+* koristimo sva tri!
+
+Redudantnost poboljšava pouzdanost, npr. u slučaju otkaza čvora postoji potencijalno još neki put donekle koji ne uključuje taj čvor, a pomaže i kod smanjenja zagušenja. Odabir koja će se putanja od dostupnih izabrati može da se vrši na više načina: generisanje slučajnog broja npr (balansira opterećenje, ali paketi mogu imati različito kašnjenje), ili još bolje, deterministički pristup (fiksiramo izbor na osnovu izvora i cilja) tako što se gleda IP adresa primaoca, radi se modul pa u zavisnosti od ostatka se bira i putanja, i ovaj pristup nije bolji samo jer je deterministički, već zato što ako se šalju real time podaci (strimovanje npr.) bolje je da idu istim putem svi paketi. 
+
+**Topologija**
+
+Kod ECMP rutiranja najkraći putevi od zadatog čvora ne formiraju drvo kao kod jednociljnog, već se formira usmereni aciklički graf (DAG–directed acyclic graph).
+
+## 36. Hijerarhijsko rutiranje 
+
+Trejdujemo mali deo kvaliteta rešenja kako bismo dosta poboljšali efikasnost i dobili bolje performanse. Pošto se broj rutera značajno povećao u poslednje vreme, rutiranje po svakom pojedinačnom ruteru se ne skalira dobro, i zato čvorove grupišemo u regione. Unutar regiona se vrši specifičnije rutiranje (sličan koncept kao prefiksi IP adresa).
+
+Uvodimo veće jedinice rutiranja, npr. region neke države. Za te veće jedinice vršimo rutiranje posmatrajući ih kao da su pojedinačni čvorovi. Mogu da postoje i podregioni unutar regiona - i za njih se primenjuje isti pristup, npr. ISP mreža.
+
+Konačnu putanju dobijamo tako što:
+* Najpre rutiramo paket u najmanjem regionu, npr. u okviru ISP mreže
+* Potom po izlasku iz ISP mreže koristi se rutiranje na nivou države
+* Potom se ponovo ulazi u npr. ciljnu ISP mrežu, itd.
+
+Dakle, u okviru našeg regiona smo svesni svih specifičnih rutera, a kada gledamo spolja vidimo samo konkretne dolazne i odlazne rutere za taj region.
+
+Tabela rutiranja izgleda značajno drugačije kada se koristi ova tehnika - putevi do specifičnih rutera vs. samo ruteri predstavnici nekih regiona. 
+
+Manje tabele rutiranja dovode do manje potrošnje struje, manje dimenzije problema, manje se vremena troši na rutiranje, dakle i odražava se pozitivno na protok. Ono što gubimo je optimalnost - dobijamo suboptimalna rešenja, ali i dalje dovoljno dobra.
+
+`Ima primer od 67. slajda, ali intuitivno je jasno, koga zanima može da pogleda.`
+
+**Podmreže i sažimanje**
+
+Rutiranje po regionima je i dalje teško za izračunavanje. Uvodimo dodatni podnivo u vidu IP prefiksa - podela na podmreže i njihovo kasnije sažimanje. 
+
+Postoje:
+* Vidljivi ruteri na internetu kojih su svesni ostali ruteri i koji se predstavljaju nekim svojim IP prefiksom
+* Prikriveni ruteri koji služe samo da rutiraju saobraćaj u konkretnoj podmreži, tj. unutar prefiksa iza kojih su sakriveni - za slučaj da oni šalju nešto ka ostatku interneta, šalju na samo jedan konkretan izlazni ruter - podmreže.
+
+Suprotan proces je sažimanje, a to je kad na jedan ruter stiže saobraćaj koji kasnije treba da se raspodeli Moguće je i spoljnje sažimanje nepovezanih ustanova, čime se obično bavi ISP.
