@@ -138,6 +138,13 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
     - [Prekid veze](#prekid-veze)
   - [41. Protokoli kliznih prozora na transportnom sloju](#41-protokoli-kliznih-prozora-na-transportnom-sloju)
   - [42. Kontrola toka podataka na transportnom sloju](#42-kontrola-toka-podataka-na-transportnom-sloju)
+  - [43. Retransmisije i prilagodljive pauze (tajmauti) na transportnom sloju](#43-retransmisije-i-prilagodljive-pauze-tajmauti-na-transportnom-sloju)
+  - [44. TCP, svojstva, realizacija kliznih prozora, uspostava i prekid veze (specifično)](#44-tcp-svojstva-realizacija-kliznih-prozora-uspostava-i-prekid-veze-specifično)
+    - [TCP svojstva](#tcp-svojstva)
+    - [TCP zaglavlje](#tcp-zaglavlje)
+    - [TCP klizni prozori - pošiljalac](#tcp-klizni-prozori---pošiljalac)
+  - [45. Zagušenje na transportnom sloju, opis problema i mehanizam za rešavanje AIMD](#45-zagušenje-na-transportnom-sloju-opis-problema-i-mehanizam-za-rešavanje-aimd)
+    - [AIMD (Additive increase/multiplicative decrease)](#aimd-additive-increasemultiplicative-decrease)
 
 
 <div style="page-break-after: always"></div>
@@ -2112,5 +2119,109 @@ Brzine ne moraju nužno biti vezane za download/upload brzine koje dobijamo od p
 
 Kod protokola kliznih prozora uvodi se još jedan mehanizam na osnovu dodatne informacije - WIN, koja služi da jedna strana govori drugoj dostupno stanje bafera, gde je WIN broj dostupnih mesta u baferu. Razlog za to je što podaci ne mogu da se prime/obrade dovoljno brzo, pa je potrebno da se negde privremeno skladište.
 
-Baferi se obično realizuju primenom FIFO mehanizma, a to se u praksi realizuje preko cirkularnog niza.
+<p align="center"> <img alt="idk" width=450 src="resources/tcp_flow.png"/> </p>
 
+Baferi na neki način reflektuju brzinu primaoca, njegova veličina je prilagođena njoj i obično se realizuju primenom FIFO mehanizma, a to se u praksi realizuje preko cirkularnog niza. Bafer nije namenjen da bude skroz popunjen (što je nedozvoljeni minus), nego nekih 50%. 
+
+## 43. Retransmisije i prilagodljive pauze (tajmauti) na transportnom sloju
+
+Retransmisija - glavni problem je kada ponovo poslati podatke ukoliko nije primljena potvrda. Ako se čeka predugo, previše smo pasivni i ne iskorišćavamo protok mreže, a ako se čeka prekratko, možda potvrda ipak stigne u međuvremenu, a mi opterećujemo mrežu nepotrebnim podacima.
+
+Kod sloja veze nije toliki problem izračunati ovo vreme za retransmisiju zato što smo svesni najudaljenijih čvorova i tehnologije. U ovom slučaju (na transportnom sloju) imamo ogromnu mrežu jer su sada uključeni i procesi, što je hiljade mreža povezano, dešavaju se nepredviđene okolnosti, dolazi do kašnjenja, akumulacije podataka, itd. Dakle, ovde nije problem računanje tog vremena, već u tome što se akumuliraju nepredviđene okolnosti i što postoje velike varijacije u kašnjenju.
+
+Idealno vreme pauze je RTT + Δ - onoliko koliko je potrebno da podatak ode i da se vrati + još malo ostavimo lufta. Problem se u suštini svodi na analizu vremenskih serija - istorijska merenja RTT-a za konkretnu konekciju. To radimo uzastopnim slanjem podataka (pingovanjem) da bismo dobili informaciju o tome kako se kreću kašnjenja kroz vreme. Cilj nam je da predvidimo RTT i ograničimo ga odozgo. 
+
+Kod analize vremenskih serija ključne su nam dve stvari: trend i volatilnost (fluktuacija, standardna devijacija).
+
+<p align="center"> <img alt="idk" width=450 src="resources/pril_pauza.png"/> </p>
+
+Ideja je da se oceni kratkoročni RTT i njegova varijansa, i onda to iskoristi za postavljanje trajanja pauze. Formula zasnovana na pomerajućim procesima (moving average model):
+
+1. SRTT<sub>N+1</sub> = 0.9 * SRTT<sub>N</sub> + 0.1 * RTT<sub>N+1</sub>
+2. Svar<sub>N+1</sub> = 0.9 * Svar<sub>N</sub> + 0.1 * |RTT<sub>N+1</sub> – SRTT<sub>N+1</sub>|
+
+Moving average model se zasniva na tome da uzimamo prethodna merenja i delimično ih uvrštavamo u našu procenu. Dakle, uzimamo poslednju informaciju i poslednji pomerajući prosek, faktički eksponencijalno smanjujemo značaj prethodnika. Dajemo 0.1 značaj novom podatku - poslednjem RTT-u koji je stigao, a 0.9 prethodnom stanju. Što znači, ne želimo da uzmemo poslednju informaciju koja će predstavljati buduću prognozu, jer bismo imali velike fluktuacije u svojim prognozama, dakle želimo da verujemo u trend. 10% značaja novim informacijama, 90% prethodnom stanju.
+
+Što se varijanse tiče - nisu sva pomeranja trenda podjednako informativna, evidentno je da neke informacije gubimo, npr. u sledećem primeru:
+
+<p align="center"> <img alt="idk" width=300 src="resources/trend.png"/> </p>
+
+Dakle, mora se uzeti u obzir kolika je varijabilnost, tj. koliko oko trenda oscilira vremenska serije. Ako oscilira više oko trenda, onda bi trebalo da budemo malo skeptični i stavimo procenu nešto iznad, a ako je varijansa manja, onda je procena bliža trendu. Formula pod 2. koju smo već pomenuli je po sličnom principu kao i prva, a kada smo već opremljeni tim informacijama, pauza uvek treba da bude iznad ocene RTT:
+
+* TCP Timeout<sub>N</sub> = SRTT<sub>N</sub> + 4 * Svar<sub>N</sub>
+
+Procena trajanje pauze ima JAKO bitan uticaj na performanse interneta! Pogrešno procenjena pauza jedne strane bi uticala na sve ostale - po mreži bi se kretali paketi koji nikad nije ni trebalo da budu poslati.
+
+## 44. TCP, svojstva, realizacija kliznih prozora, uspostava i prekid veze (specifično)
+
+`Na I smer videima ne postoji deo gde on priča o ovome, a na R smer videima ga je samo kompletno preskočio.`
+
+### TCP svojstva
+
+* Pouzdan tok bajtova - segmenti se mogu kretati neuređeno i nepouzdano kroz mrežni i ostale niže slojeve, međutim, transportni sloj ih uređuje, proverava, i aplikativnom šalje pouzdano i po redu. Slanje i primanje podataka u oba smera. Kontrolne informacije (npr. ACK) se često šalju kao delovi dolaznih segmenata za podatke iz drugog smera (šlepanje).
+* Zasnovan na vezama
+* Klizni prozori zarad pouzdanosti (sa prilagodljivim pauzama)
+* Kontrola toka za spore primaoce
+
+### TCP zaglavlje
+
+* Portovi identifikuju programe (socket API), 16-bitni identifikatori
+* SEQ/ACK brojevi se koriste u okviru protokola kliznih prozora
+
+<p align="center"> <img alt="idk" width=450 src="resources/tcp_header.png"/> </p>
+
+### TCP klizni prozori - pošiljalac
+
+* Koristi prilagodljivu pauzu za retransmisiju segmenata koji počinju od LAS+1
+* Koristi heuristiku kako bi brže zaključio koji segmenti su izgubljeni i time izbegao istek pauze - heuristika "tri duplirana ACK-a" impliciraju gubitak
+
+`---- ??????? ---- možda u kasnijem trenutku izvučem dodatno iz Tanenbauma nešto o ovome`
+
+## 45. Zagušenje na transportnom sloju, opis problema i mehanizam za rešavanje AIMD
+
+Zagušenje je problem na internetu koji se dešava i u prirodi, npr. saobraćaj, deadlockovi na raskrsnici, itd. Imamo bafere na ruterima i svičevima, ali oni ne pomažu ovom problemu toliko. U suštini, oni mogu samo delimično da odlože problem, ali će problem definitivno da se manifestuje ponovo čim se bafer napuni, koliki god da je. Baferi su tu za momentalne fluktuacije, npr.kada je velika varijansa, u nekim trenucima ćemo imati dosta saobraćaja - bafer se puni, a u nekim manje nego očekivano, tj. ispod trenda - bafer koji se napunio prethodno se prazni i podaci prolaze brzo.
+
+Problem nastaje kada kontinuirano imamo trend koji je iznad kapaciteta, tj. dugoročna i srednjeročna stanja u kojima je ulazni saobraćaj veći od izlaznog saobraćaja. U ovom slučaju baferi se prepunjavaju i postaju besmisleni, kao dozvoljeni minus na minimalnoj vrednosti. Da bi se rešio problem zagušenja, mora se reagovati na drugačiji način, a to je da pošiljaoci ne šalju, tj. disciplinuju se. Zagušenja dakle rešavaju pošiljaoci na transportnom sloju i neophodno je da nekako oni budu svesni da je mreža zagušena kako bi redukovali slanje ili skroz prestali.
+
+Prvi grafik prestavlja broj zahtevanih bajtova u sekundi u odnosu na broj propuštenih bajtova u sekundi. Kada je malo opterećenje, manje-više je ponašanje linearno, tj. ono što zahtevamo to će i proći kroz mrežu - manje kolizija, manje čekanja, manje prepunjavanje bafera, itd. Kako se približavamo kapacitetu mreže, ispostavlja se da sve veći broj paketa ne prolazi zbog raznih internih problema, dešavaće se retransmisije koje će izazivati druge retransmisije, mreža će biti sve opterećenija itd. Kriva više nije linearna već se asimptotski približava kapacitetu, dakle taj stvarni maksimalni protok u praksi nikada ne bismo mogli da dostignemo. Performanse se drastično smanjuju kako se povećava opterećenje - izaziva se kolaps.
+
+<p align="center"> <img alt="idk" width=600 src="resources/kolaps.png"/> </p>
+
+Na nivou operativnog sistema su implementirani TCP (i UDP, ali ovde nije relevantan). Svi operativni sistemi koji realizuju TCP ga realizuju po nekim protokolima i pravilima, a jedno od njih je da se uzimaju u obzir zagušenja. Za zagušenje su bitna dva faktora: efikasnost i ravnopravnost.
+
+* Efikasnost podtazumeva da je skoro ceo kapacitet upotrebljen, ali da nema zagušenja, tj. da iskoristimo kapacitet što je više moguće.
+* Ravnopravnost podrazumeva da svaki pošiljalac dobija racionalni udeo protoka, da ne postoji situacija da neko šalje mnogo, a neko ništa.
+
+Za rešavanje problema zagušenja transportni i mrežni sloj moraju da rade zajedno - jer zagušenja detektuju ruteri, ali ruteri sami po sebi ne mogu da ga reše. Transportni sloj je na višem logičkom nivou, a sloj veze na nižem. Transportni sloj u globalu je onaj koji izaziva zagušenje, i on može i da ga razreši. 
+
+Ideja je da pošiljaoci prilagođavaju svoj odlazni saobraćaj na osnovu onoga što detektuju iz mreže imajući u vidu efikasnost i ravnopravnost. To prilagođavanje mora da bude stalno, jer se stanje mreže stalno menja.
+
+### AIMD (Additive increase/multiplicative decrease)
+
+Kontrolni mehanizam kao što postoji i u avionima npr. gde svi učesnici teže nekom ekvilibrijumu. Ideja je da pošiljaoci aditivno povećavaju brzinu slanja podataka dok mreža ne postane zagušena. Nakon toga je umnoženo smanjuju kada uoče zagušenje. TCP koristi ovo u nekoj formi. 
+
+Podaci pošiljaoca 1 i 2 prolaze kroz istu tačku zagušenja (usko grlo, bottleneck), međutim, pošiljaoci ne mogu da komuniciraju direktno. Ruter je taj koji npr. može da signalizira. Šalje binarno 0/1 ako ne postoji ili postoji zagušenje. 
+
+Svaka alokacija je dopustiva, ali nisu sve dobre. Presek ravnopravnosti i efikasnosti je optimalna alokacija - i to postižemo sa AI i MD na sledeći način:
+
+<p align="center"> <img alt="idk" width=400 src="resources/odnos_zag.png"/> </p>
+
+Niko ovde nema centralizovanu informaciju ko koliko čega troši - već distribuiran sistem gde može svako da reaguje samo za sebe i jedino što ima je binarna informacija da li se dešava zagušenje ili ne. Bitna stvar za naglasiti ovde je da aditivno uvećanje i aditivno smanjenje ne bi radili posao - samo bismo se kretali po istoj pravoj i ništa ne bismo postigli. Drugim rečima, ono što bi se desilo je da bismo ekvilibrijum postigli samo u slučaju da nam je početno stanje negde na samoj pravoj / ravnomerne potrošnje. Multiplikativno smanjenje zapravo funkcioniše tako da se svakome smanjuje alociran protok relativno u odnosu na to koliko ga trenutno ima. Njihov pomeraj nije pod uglom od 45 stepeni nego pod nekim uglom koji ih usmerava ka koordinatnom početku. Ono što se dešava tokom primene AIMD:
+
+<p align="center"> <img alt="idk" width=400 src="resources/aimd.png"/> </p>
+
+AIMD karakteristike:
+
+* Konvergira ka optimalnoj tački alokacije, tj. preseku pravih efikasnosti i ravnopravnosti. Radi i u višedimenzionom scenariju. 
+* Ostali pristupi ne rade posao - MIAD, MIMD, AIAD
+* Zahteva samo binarni odgovor/signal od mreže da bi radio.
+
+Binarni odgovori mreže - kako se dešavaju? Na koji način ruteri zaključuju da se zagušenje dešava? Nekoliko mogućih tipova signala je u u upotrebi, TCP koristi prvi:
+
+|Signal|Primer protokola|+/-|
+|------|----------------|---|
+|Gubitak paketa|TCP NewReno<br>Cubic TCP (Linux)|Pouzdano detektuje, ali kasno čuje|
+|Kašnjenje paketa|CompoundTCP (Windows)|Rano čuje, ali pravi pretpostavku|
+|Signal rutera|TCP sa eksplicitnim signalom zagušenja|Rano čuje, ali zahteva podršku rutera|
+
+Signali rutera mogu da budu opciono implementirani kao eksplicitna informacija, uz ostale implementacije ili bez (možda?), kao 100% informacija da se dešava zagušenje.
