@@ -1,8 +1,13 @@
 ```
 Autor: Mina Krivokuća
-Februar 2021.
+Jul 2021.
 
 Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i prezentacija.
+
+Hvala kolegama za napomene, ispravke i doprinos:
+- Darinka Zobenica
+- Filip Filipović
+- Teodora Nićković
 ```
 
 - [Uvod u računarske mreže](#uvod-u-računarske-mreže)
@@ -145,6 +150,36 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
     - [TCP klizni prozori - pošiljalac](#tcp-klizni-prozori---pošiljalac)
   - [45. Zagušenje na transportnom sloju, opis problema i mehanizam za rešavanje AIMD](#45-zagušenje-na-transportnom-sloju-opis-problema-i-mehanizam-za-rešavanje-aimd)
     - [AIMD (Additive increase/multiplicative decrease)](#aimd-additive-increasemultiplicative-decrease)
+- [Aplikativni sloj](#aplikativni-sloj)
+  - [46. Aplikativni sloj, uloga, interakcija sa slojem ispod, pregled Internet aplikacija](#46-aplikativni-sloj-uloga-interakcija-sa-slojem-ispod-pregled-internet-aplikacija)
+    - [Uloga](#uloga-3)
+    - [Interakcija sa slojem ispod](#interakcija-sa-slojem-ispod)
+    - [Pregled internet aplikacija](#pregled-internet-aplikacija)
+  - [DNS, uloga, raniji pristup, moderni pristup, TLD, slogovi](#dns-uloga-raniji-pristup-moderni-pristup-tld-slogovi)
+    - [Uloga](#uloga-4)
+    - [Raniji pristup](#raniji-pristup)
+    - [Moderni pristup](#moderni-pristup)
+    - [TLD - top level domeni (krovna imena)](#tld---top-level-domeni-krovna-imena)
+    - [Slogovi](#slogovi)
+  - [28. DNS, zone, opis mehanizma određivanja adresa](#28-dns-zone-opis-mehanizma-određivanja-adresa)
+    - [Zone](#zone)
+    - [Opis mehanizma određivanja adresa](#opis-mehanizma-određivanja-adresa)
+    - [Iterativni i rekurzivni DNS](#iterativni-i-rekurzivni-dns)
+    - [Keširanje](#keširanje)
+    - [DNS poruke](#dns-poruke)
+  - [49. HTTP protokol, preuzimanje Veb dokumenta](#49-http-protokol-preuzimanje-veb-dokumenta)
+    - [Veb/HTTP protokol](#vebhttp-protokol)
+    - [Preuzimanje veb dokumenta](#preuzimanje-veb-dokumenta)
+  - [50. HTTP performanse](#50-http-performanse)
+    - [PLT (Page Load Time, vreme učitavanja dokumenta)](#plt-page-load-time-vreme-učitavanja-dokumenta)
+    - [Paralelne TCP veze](#paralelne-tcp-veze)
+    - [Trajne (višestruko upotrebljive) veze](#trajne-višestruko-upotrebljive-veze)
+  - [51. HTTP keširanje i HTTP proksiji](#51-http-keširanje-i-http-proksiji)
+    - [HTTP keširanje](#http-keširanje)
+    - [HTTP proksiji](#http-proksiji)
+  - [52. CDN (Content Delivery Network)](#52-cdn-content-delivery-network)
+  - [53. P2P](#53-p2p)
+    - [BitTorrent](#bittorrent)
 
 
 <div style="page-break-after: always"></div>
@@ -159,7 +194,7 @@ Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i pr
 Ideja novog sistema nije bila previše deterministička - grafovi komunikacije nisu izgledali kao da su planirani, već su podsećali na slučajne grafove (princip: dodaj granu tamo gde misliš da treba, pravile su se prečice tamo gde se osećala potreba). Ideja je prvo prihvaćena od strane univerziteta u Americi, naučnicima se dopala ideja stalne međusobne komunikacije. Najpoznatiji softver koji je korišćen za pristup udaljenom čvoru je Teolnet (?). Najveća motivacija za širenje je bila laka dostupnost udaljenih baza znanja i informacija. Kao druga "aplikacija" pojavljuje se mejl.
 
 <p align="center">
-  <img alt="Map of internet" width=500 src="resources/internet_map.jpg"/>
+  <img alt="Map of Internet" width=500 src="resources/Internet_map.jpg"/>
 </p>
 
 Na slici iznad je površna ilustracija izgleda Internet mreže 2005. godine. Ono što je jasno je da izgleda poprilično haotično i puna redundantnosti - što za nas znači da je razbijanje mreže na više delova presecanjem komunikacija značajno teže. Čvorovi koji deluju izolovaniji i manje povezani sa ostalima nisu nužno loše isplanirani - već su pre čvorovi koji pripadaju nekim vladinim organizacijama, vojsci, itd. Ovakvi čvorovi često imaju sisteme nezavisne komunikacije i za njih je bitno da budu i fizički udaljeni od ostalih, pored korišćenja drugačijih softvera i sistema enkripcije i zaštite.
@@ -395,7 +430,7 @@ Ključna pitanja kod dizajna modela su koju funkcionalnost implementira svaki sl
 * Internet (TCP/IP) model - 4 sloja, zasnovan na praksi. Poslednji sloj, tj. sloj veze grupiše funkcionalnosti tradicionalnog sloja veze i fizičkog sloja. Isprepletane su aktivnosti uređaja koji moduliraju i demoduliraju signal i mrežne kartice koja radi  detekciju i korekciju grešaka, usaglašavanje brzina slanja i primanja, itd.
 
 <p align="center">
-  <img alt="OSI vs. Internet" width=300 src="resources/osi_vs_internet.png"/>
+  <img alt="OSI vs. Internet" width=300 src="resources/osi_vs_Internet.png"/>
 </p>
 
 
@@ -550,7 +585,7 @@ Dva tipa vlakana:
 
 <p align="center"> <img alt="Optic" width=400 src="resources/global_optic_state.png"/> </p>
 
-Sistem za zaštitu prekookeanskih kablova je skup i komplikovan. Uglavnom je moguća autodijagnostika i reparacija, ali često je potrebno i doći i popraviti. Na slici se vidi da kablova ima dosta, ali ih je ipak teško provući kroz neke države iz političkih razloga - npr. kroz države Afrike. Kako su prekookeanski jako skupi, kompanije koje su ih provukle skupo naplaćuju saobraćaj koji kroz njih teče. Novac počinje od malih korisnika, odlazi do malih internet provajdera, oni plaćaju putarine npr. evropskim provajderima.
+Sistem za zaštitu prekookeanskih kablova je skup i komplikovan. Uglavnom je moguća autodijagnostika i reparacija, ali često je potrebno i doći i popraviti. Na slici se vidi da kablova ima dosta, ali ih je ipak teško provući kroz neke države iz političkih razloga - npr. kroz države Afrike. Kako su prekookeanski jako skupi, kompanije koje su ih provukle skupo naplaćuju saobraćaj koji kroz njih teče. Novac počinje od malih korisnika, odlazi do malih Internet provajdera, oni plaćaju putarine npr. evropskim provajderima.
 
 ## 6. Bežični komunikacioni medijumi
 
@@ -884,7 +919,7 @@ Ova insfrastruktura je drugačije topologije u odnosu na telefonski sistem i vi�
 
 Kablovi međugradsko povezanih kablovskih sistema se vremenom unapređuju optičkim, dok tamo gde nije neophodno ostaju koaksijalni. 
 
-Vremenom kablovski operateri shvataju da mogu da pružaju i usluge interneta. Spektar frekvencija se delio tako da dobar deo opsega zauzima prenos TV signala pošto on zaista jeste zahtevan. Mali deo je zauzimao i radio, kao i upload. Dobar komad zauzima download podataka.
+Vremenom kablovski operateri shvataju da mogu da pružaju i usluge Interneta. Spektar frekvencija se delio tako da dobar deo opsega zauzima prenos TV signala pošto on zaista jeste zahtevan. Mali deo je zauzimao i radio, kao i upload. Dobar komad zauzima download podataka.
 
 **Kablovska ili (A)DSL**
 
@@ -1249,7 +1284,7 @@ Ključna pitanja vezana za ARQ:
 
 Osnovni cilj je korektnost, bez grešaka i duplikata, a onda želimo da komunikacija bude i efikasna.
 
-Pauza ne treba da bude ni premala (nepotrebne transmisije), a ni prevelika (neiskorišćenost kanala). Ispostavlja se da je odgovor na prvo pitanje jednostavan - radi se analiza najgoreg slučaja. Uzima se najgori slučaj, tj. u lokalnoj mreži najudaljenije dve tačke (kada se uzme u obzir dužina kablova, ruteri i svičevi koji postoje između, itd.), delimo taj slučaj sa brzinom svetlosti, uračunamo neka potencijalna kašnjenja i dobijamo neku relativno ok meru koliko treba da čekamo. Na internetu, tj. na udaljenim računarima koji nisu u lokalnoj mreži ovo je dosta komplikovanije jer su komunikacije tranzitivne, i uglavnom se dinamički određuje.
+Pauza ne treba da bude ni premala (nepotrebne transmisije), a ni prevelika (neiskorišćenost kanala). Ispostavlja se da je odgovor na prvo pitanje jednostavan - radi se analiza najgoreg slučaja. Uzima se najgori slučaj, tj. u lokalnoj mreži najudaljenije dve tačke (kada se uzme u obzir dužina kablova, ruteri i svičevi koji postoje između, itd.), delimo taj slučaj sa brzinom svetlosti, uračunamo neka potencijalna kašnjenja i dobijamo neku relativno ok meru koliko treba da čekamo. Na Internetu, tj. na udaljenim računarima koji nisu u lokalnoj mreži ovo je dosta komplikovanije jer su komunikacije tranzitivne, i uglavnom se dinamički određuje.
 
 Što se drugog pitanja tiče, duplikati se mogu desiti u dva slučaja, i u oba slučaja pošiljalac pošalje isti okvir ponovo, pa primalac ima nekorektne podatke jer je isti okvir stigao dva puta, umesto jednom: 
 
@@ -1466,7 +1501,7 @@ Prednosti svičeva:
 - Pouzdanije nego klasični eternet - kvar na jednoj žici nema uticaj na veći deo mreže, kvar se lako pronalazi, ako ne radi cela mreža, znači da je problem u samom sviču.
 - Omogućavaju poboljšani protok, npr. 100 Mb/s po ulazno/izlaznoj liniji umesto 100 Mb/s za celu mrežu, tj. deljeni kabl. 
 
-Što se prosleđivanja podataka tiče, svič treba da pronađe odgovarajući port na osnovu adrese primaoca iz internet okvira. Takože želimo da možemo da premeštamo čvorove (isključujemo i uključujemo u različite portove).
+Što se prosleđivanja podataka tiče, svič treba da pronađe odgovarajući port na osnovu adrese primaoca iz Internet okvira. Takože želimo da možemo da premeštamo čvorove (isključujemo i uključujemo u različite portove).
 
 Učenje unazad - prosleđivanje okvira na osnovu tabele relacija između broja porta i adrese i okvira. Dakle, svič u internoj memoriji ima tabelu koja da bi se popunila, treba da posmatramo adrese i portove čvorova koji šalju okvire. Ako se za zadatu adresu u tabeli nalazi pridruženi port, onda pošalji samo njemu, inače pošalji svima. Kada se svič tek uključi, prirodno je da je tabela inicijalno prazna. Svič popunjava tabelu prilikom slanja okvira (mapira MAC pošiljalaca na njegov port).
 
@@ -1549,7 +1584,7 @@ Kao što smo već rekli:
 
 <p align="center"> <img alt="ipv4" width=400 src="resources/datagram.png"/> </p>
 
-- Nekada kada se definisao ovaj protokol 2<sup>32</sup> (oko 4 milijarde) je bio ogroman broj i delovalo je da će i u budućnosti biti dovoljno. I dalje je ova verzija protokola najdominantnija (bar 70-80%) što se tiče rutera i komunikacije na internetu, ali postoji trend prelaska na IPv6, što je noviji internet protokol koji koristi 128 bita. Eventualno bi trebalo svi da pređu na IPv6 jer IPv4 prosto nema dovoljno veliki opseg adresa da pokrije sve. Sajtovi, tj. hostinzi koji ne mogu da rade sa javnim IP adresama su već potrošili ovaj opseg, pa se iz tog razloga uvodi NAT - videćemo kasnije šta je.
+- Nekada kada se definisao ovaj protokol 2<sup>32</sup> (oko 4 milijarde) je bio ogroman broj i delovalo je da će i u budućnosti biti dovoljno. I dalje je ova verzija protokola najdominantnija (bar 70-80%) što se tiče rutera i komunikacije na Internetu, ali postoji trend prelaska na IPv6, što je noviji Internet protokol koji koristi 128 bita. Eventualno bi trebalo svi da pređu na IPv6 jer IPv4 prosto nema dovoljno veliki opseg adresa da pokrije sve. Sajtovi, tj. hostinzi koji ne mogu da rade sa javnim IP adresama su već potrošili ovaj opseg, pa se iz tog razloga uvodi NAT - videćemo kasnije šta je.
 
 ## 27. IP adrese i prefiksi
 
@@ -1566,7 +1601,7 @@ IP prefiksi predstavljaju uopštenja IP adresa i predstavljaju grupu adresa koja
 Notacija je najčešće oblika "IP adresa/dužina prefiksa", npr. 128.13.0.0/16 je opseg 128.13.0.0 do 128.13.255.255.
 Prefiks oblika /24 odgovara opsegu sa 256 adresa, dok /32 odgovara jedinstvenoj adresi.
 
-IP prefiksi su vrlo pogodan i kompaktan način grupisanja IP adresa - imaju lak način zapisivanja i jednostavni su za razumevanje. IP prefiksi ne mogu baš da opišu proizvoljnu grupu računara (morali bismo prosto da ispišemo redom sve IP adrese koje želimo da grupišemo), već samo one koji dele prefiks, ali to je dovoljno dobro jer... Regulatorno telo (IANA) koje je nadležno za dodeljivanje IP adresa širom sveta celokupnog opsega zbog kompleksnosti delegiranja IP adresa svojim podinstitucijama delegira određene opsege IP adresa, tako da npr. US i Kanada dobijaju jedan opseg, drugi Azija, treći Evropa, itd. Dalje su opsezi adresa delegirani kompanijama i internet provajderima. Presek svih ovih IP adresa dodeljenih institucijama je prazan skup. Podorganizacije i institucije dalje na isti način razbijaju svoje opsege na disjunktne prefikse (podopsege) i daju ih dalje na korišćenje. Baš ovakvim načinom rasparčavanja se omogućava prefiksna notacija i podela. Prefiksi ne predstavljaju nužno neku konkretnu geografsku lokaciju, može se desiti da ima tačaka van, dakle ne postoji striktna veza između geografske lokacije i IP adrese, ali postoji dobra korelacija. Ta korelacija je jako bitna za rad rutera - ruteri ne bi bili u mogućnosti da rade tako dobro bez nje, što ćemo videti kasnije.
+IP prefiksi su vrlo pogodan i kompaktan način grupisanja IP adresa - imaju lak način zapisivanja i jednostavni su za razumevanje. IP prefiksi ne mogu baš da opišu proizvoljnu grupu računara (morali bismo prosto da ispišemo redom sve IP adrese koje želimo da grupišemo), već samo one koji dele prefiks, ali to je dovoljno dobro jer... Regulatorno telo (IANA) koje je nadležno za dodeljivanje IP adresa širom sveta celokupnog opsega zbog kompleksnosti delegiranja IP adresa svojim podinstitucijama delegira određene opsege IP adresa, tako da npr. US i Kanada dobijaju jedan opseg, drugi Azija, treći Evropa, itd. Dalje su opsezi adresa delegirani kompanijama i Internet provajderima. Presek svih ovih IP adresa dodeljenih institucijama je prazan skup. Podorganizacije i institucije dalje na isti način razbijaju svoje opsege na disjunktne prefikse (podopsege) i daju ih dalje na korišćenje. Baš ovakvim načinom rasparčavanja se omogućava prefiksna notacija i podela. Prefiksi ne predstavljaju nužno neku konkretnu geografsku lokaciju, može se desiti da ima tačaka van, dakle ne postoji striktna veza između geografske lokacije i IP adrese, ali postoji dobra korelacija. Ta korelacija je jako bitna za rad rutera - ruteri ne bi bili u mogućnosti da rade tako dobro bez nje, što ćemo videti kasnije.
 
 `Stari sistem grupisanja su bile klase adresa fiksne dužine, gde je npr. klasa C adekvatna za lokalne mreže:`
 <p align="center"> <img alt="idk" width=500 src="resources/klase_ip.png"/> </p>
@@ -1574,7 +1609,7 @@ IP prefiksi su vrlo pogodan i kompaktan način grupisanja IP adresa - imaju lak 
 Kako računamo opsege:
 <p align="center"> <img alt="idk" width=500 src="resources/primer_opsega.png"/> </p>
 
-Javna IP adresa mora biti jedinstvena oznaka računara na internetu. Mora se dodeliti pre upotrebe od strane regulatornog tela. Privatne IP adrese nisu globalno jedinstvene, već su na nivou manjih mreža, npr. u firmi, kućnoj lokalnoj mreži i slično. Potrebna je javna bar jedna IP adresa i NAT da bi se iz ovakvih mreža povezali na internet. 
+Javna IP adresa mora biti jedinstvena oznaka računara na Internetu. Mora se dodeliti pre upotrebe od strane regulatornog tela. Privatne IP adrese nisu globalno jedinstvene, već su na nivou manjih mreža, npr. u firmi, kućnoj lokalnoj mreži i slično. Potrebna je javna bar jedna IP adresa i NAT da bi se iz ovakvih mreža povezali na Internet. 
 
 ## 28. IP prosleđivanje
 
@@ -1630,7 +1665,7 @@ ICMP paket sadrži tip greške, kod i kontrolni zbir. ICMP paket je isti kao IP 
 
 ### NAT (Network Address Translation Protocol)
 
-NAT povezuje računare iz lokalne mreže na spoljnu mrežu, npr. Internet, dakle nalazi se na izlazu lokalne mreže u globalnu. Postojanje NAT-a je neophodno zbog ograničenja broja adresa koje ima IPv4. Ideja je bila omogućiti većem broju uređaja da budu priključeni na internet nego što IPv4 dozvoljava tako što ne moramo svakom da dodelimo javnu IP adresu.  
+NAT povezuje računare iz lokalne mreže na spoljnu mrežu, npr. Internet, dakle nalazi se na izlazu lokalne mreže u globalnu. Postojanje NAT-a je neophodno zbog ograničenja broja adresa koje ima IPv4. Ideja je bila omogućiti većem broju uređaja da budu priključeni na Internet nego što IPv4 dozvoljava tako što ne moramo svakom da dodelimo javnu IP adresu.  
 
 NAT je prljavi protokol - ruši slojevitost računarskih mreža i to da bi skup stvari kojima se slojevi bave trebalo da budu disjunktni. Čačka po informacijama transportnog sloja (?), tj. nalazi se negde između mrežnog i transportnog.
 
@@ -1690,7 +1725,7 @@ Različiti algoritmi rutiranja za različite modele:
 <p align="center"> <img alt="idk" width=500 src="resources/cast.png"/> </p>
 
 1. Unicast - šalje se sadržaj jednom krajnjem korisniku
-2. Broadcast - jedan čvor šalje svim čvorovima mreže, npr. digitalna televizija koja ide preko interneta, bilo bi baš neefikasno kada bi N puta primenila unicast, koriste se razni mehanizmi keširanja, ruteri imaju keširanu neku količinu statičkog sadržaja kako bi se smanjio broj prolazaka 
+2. Broadcast - jedan čvor šalje svim čvorovima mreže, npr. digitalna televizija koja ide preko Interneta, bilo bi baš neefikasno kada bi N puta primenila unicast, koriste se razni mehanizmi keširanja, ruteri imaju keširanu neku količinu statičkog sadržaja kako bi se smanjio broj prolazaka 
 3. Multicast - slično kao broadcast, ali namenjen za ne tako veliku grupu ljudi, npr. video konferencije. Moramo paziti kojim modelom isporučujemo podatke zbog trošenja saobraćaja (koji neko plaća!) ili struje.
 4. Anycast - podseća na stari manuelni mehanizam, npr. kada na nekom sajtu biramo sa kog servera ćemo preuzeti sadržaj (ponuđene su nam države, pa mi biramo najbližu). U ovom slučaju se ovo procenjuje dinamički, ne određujemo mi, nego on sam procenjuje odakle nam sadržaj dolazi.
 
@@ -1717,7 +1752,7 @@ Redom po bitnosti:
 
 ### Rutiranje sa najkraćim putevima
 
-Dakle, na osnovu 1., kada opisujemo internet mrežu grafom, ne uzimamo u obzir lokalne mreže. S druge strane, ruteri su međusobno ispovezivani i tu postoji način da se naprave jako dobre putanje. Nama je cilj da nađemo optimalnu putanju nekom funkcijom cilja. Prvo definišemo koji put je najbolji, najkraći, najjeftiniji, najmanje kašnjenja, ili neka kombinacija? 
+Dakle, na osnovu 1., kada opisujemo Internet mrežu grafom, ne uzimamo u obzir lokalne mreže. S druge strane, ruteri su međusobno ispovezivani i tu postoji način da se naprave jako dobre putanje. Nama je cilj da nađemo optimalnu putanju nekom funkcijom cilja. Prvo definišemo koji put je najbolji, najkraći, najjeftiniji, najmanje kašnjenja, ili neka kombinacija? 
 
 Svaki graf ima sebi pridruženu matricu troškova, tj. postoji funkcija koja preslikava svaku granu u njenu težinu, dakle težinski graf. Ti troškovi mogu da budu bilo šta od ovih gore pomenutih stvari.
 
@@ -1748,7 +1783,7 @@ Karakteristike algoritma:
 
 ## 32. Rutiranje zasnovano na vektoru razdaljine
 
-Želimo da vidimo kako se Dajkstrin algoritam ponaša u visokodimenzionom okruženju, odnosno kako se ponaša na internetu, kakve su mu performanse i načini realizacije tako da radi u tom distribuiranom, kompleksnom i vremenski zahtevnom okruženju.
+Želimo da vidimo kako se Dajkstrin algoritam ponaša u visokodimenzionom okruženju, odnosno kako se ponaša na Internetu, kakve su mu performanse i načini realizacije tako da radi u tom distribuiranom, kompleksnom i vremenski zahtevnom okruženju.
 
 ### DV rutiranje (Distance Vector Routing)
 
@@ -1785,7 +1820,7 @@ Dakle, algoritam se završava onda kada tabela iskonvergira, to može da bude i 
 
 `Ovo su njegove reči, nije rekao eksplicitno zašto je pomenuo dijametar, verovatno toliko treba za konvergenciju u najgorem slučaju, a radijus utiče na najbolji?`
 
-Ali u suštini, problem sa ovim algoritmom nije tih minimalno 100 razmena koje se dese (ovih 100 je rekao da je ofrlje procenjen radijus na internetu), već to što pre nego što algoritam završi tih 100 razmena, desi se neki otkaz ili promena na mreži, tako da taj međurezultat više nije validan i algoritam postaje nestabilan. Sa rastom interneta ovaj algoritam se sve manje koristi.
+Ali u suštini, problem sa ovim algoritmom nije tih minimalno 100 razmena koje se dese (ovih 100 je rekao da je ofrlje procenjen radijus na Internetu), već to što pre nego što algoritam završi tih 100 razmena, desi se neki otkaz ili promena na mreži, tako da taj međurezultat više nije validan i algoritam postaje nestabilan. Sa rastom Interneta ovaj algoritam se sve manje koristi.
 
 Dobra strana je sjajna distribuiranost, a glavna loša strana je upravo ta brzina konvergencije.
 
@@ -1800,7 +1835,7 @@ Dobra strana je sjajna distribuiranost, a glavna loša strana je upravo ta brzin
 
 ## 33. Plavljenje
 
-Standardni način realizacije algoritma broadcast modela isporuke. Potrebno je neku poruku, tj. neku informaciju koju ima jedan čvor poslati svima na internetu (ne bukvalno svima, nego nekim konkretnim javnim ruterima) u najkraćem mogućem roku. Jednostavan mehanizam i brz u smislu pristizanja informacija, ali ne preterano efikasan u smislu zauzimanja protoka. 
+Standardni način realizacije algoritma broadcast modela isporuke. Potrebno je neku poruku, tj. neku informaciju koju ima jedan čvor poslati svima na Internetu (ne bukvalno svima, nego nekim konkretnim javnim ruterima) u najkraćem mogućem roku. Jednostavan mehanizam i brz u smislu pristizanja informacija, ali ne preterano efikasan u smislu zauzimanja protoka. 
 
 Protokol nalaže pravilo na svakom čvoru - nakon pristizanja poruke prosledi je svim ostalim susedima osim onom od kog si dobio poruku.
 
@@ -1820,7 +1855,7 @@ Ono što se obično radi u praksi je da se čuva samo poslednji redni broj za za
 
 Plavljenje ulazi u sastav ovog algoritma na neki način, tj. link state routing koristi prethodno uvedene koncepte. Značajno je drugačiji od DV rutiranja. Sastoji se iz dve faze:
 
-1. Čvorovi plave mrežu informacijama o svojoj lokalnoj topologiji (susedima), svaki čvor je tako u stanju da rekonstruiše celokupnu topologiju, to jest svaki ruter šalje celom relevantnom skupu rutera na internetu o svojoj lokalnoj topologiji. Znači, ne o tranzitivnim vrednostima, nego samo informacije o susedima sa kojima je povezan, npr. optičkim kablom. Mreža biva preplavljena tim paketima, svako šalje svima sve, zbog toga je bitno poznavati karakteristike ovog algoritma (jako brz što se tiče stizanja podataka jer stižu najkraćim putem, a to je sigurno jer se prolazi kroz sve puteve, podatak stiže najkraćim, ostali koji stignu posle se odbacuju). Brzina je bitna zbog drugog koraka i preračunavanja najkraćih puteva, jer što brže čvorovi postanu svesni otkaza nekog čvora, to će brže ažurirati svoju tabelu rutiranja.
+1. Čvorovi plave mrežu informacijama o svojoj lokalnoj topologiji (susedima), svaki čvor je tako u stanju da rekonstruiše celokupnu topologiju, to jest svaki ruter šalje celom relevantnom skupu rutera na Internetu o svojoj lokalnoj topologiji. Znači, ne o tranzitivnim vrednostima, nego samo informacije o susedima sa kojima je povezan, npr. optičkim kablom. Mreža biva preplavljena tim paketima, svako šalje svima sve, zbog toga je bitno poznavati karakteristike ovog algoritma (jako brz što se tiče stizanja podataka jer stižu najkraćim putem, a to je sigurno jer se prolazi kroz sve puteve, podatak stiže najkraćim, ostali koji stignu posle se odbacuju). Brzina je bitna zbog drugog koraka i preračunavanja najkraćih puteva, jer što brže čvorovi postanu svesni otkaza nekog čvora, to će brže ažurirati svoju tabelu rutiranja.
 2. Svaki čvor računa svoju tabelu prosleđivanja, što može da se postigne npr. Dajkstrinim algoritmom. Svi su dobili parcijalne informacije o celoj mreži i svaki čvor radi rekonstrukciju grafa. Pošto imamo tabele lokalnog susedstva za svaki čvor, možemo linearnim algoritmom formirati kompletan graf. Onda se Dajkstrinim ili nekim drugim algoritmom računaju udaljenosti iz svakog čvora i ažurira se tabela rutiranja.
 
 **Reagovanje na greške**
@@ -1883,8 +1918,8 @@ Manje tabele rutiranja dovode do manje potrošnje struje, manje dimenzije proble
 Rutiranje po regionima je i dalje teško za izračunavanje. Uvodimo dodatni podnivo u vidu IP prefiksa - podela na podmreže i njihovo kasnije sažimanje. 
 
 Postoje:
-* Vidljivi ruteri na internetu kojih su svesni ostali ruteri i koji se predstavljaju nekim svojim IP prefiksom
-* Prikriveni ruteri koji služe samo da rutiraju saobraćaj u konkretnoj podmreži, tj. unutar prefiksa iza kojih su sakriveni - za slučaj da oni šalju nešto ka ostatku interneta, šalju na samo jedan konkretan izlazni ruter - podmreže.
+* Vidljivi ruteri na Internetu kojih su svesni ostali ruteri i koji se predstavljaju nekim svojim IP prefiksom
+* Prikriveni ruteri koji služe samo da rutiraju saobraćaj u konkretnoj podmreži, tj. unutar prefiksa iza kojih su sakriveni - za slučaj da oni šalju nešto ka ostatku Interneta, šalju na samo jedan konkretan izlazni ruter - podmreže.
 
 <p align="center"> <img alt="idk" width=500 src="resources/podmreze.png"/> </p>
 
@@ -1951,7 +1986,7 @@ TO i FROM kod SEND i RECEIVE nije neophodno kod tokova podataka, već samo kod d
 
 ### Portovi
 
-Proces identifikator se ne koristi kao spoljni identifikator na internetu zato što je manipulacija njima zavisna od OS-a, i hendluje ih na interni način. Želimo da aplikacije sa interneta komuniciraju i povezuju se na druge aplikacije (procese) na standardan način, što omogućavamo određivanjem standardnih portova za standardne aplikacije, npr. web server se obično nalazi na portu 80 ili 8080.
+Proces identifikator se ne koristi kao spoljni identifikator na Internetu zato što je manipulacija njima zavisna od OS-a, i hendluje ih na interni način. Želimo da aplikacije sa Interneta komuniciraju i povezuju se na druge aplikacije (procese) na standardan način, što omogućavamo određivanjem standardnih portova za standardne aplikacije, npr. web server se obično nalazi na portu 80 ili 8080.
 
 Procesi se identifikuju uređenom trojkom: IP adresa, protokol, port. Portovi su 16-bitni pozitivni celi brojevi. Serveri se obično povezuju za portove sa vrednostima <1024, dok klijenti obično koriste nasumične portove koje bira OS i koriste se privremeno. Nasumični portovi klijenta ne moraju biti opšte poznati jer ih niko ne "cilja".
 
@@ -2054,7 +2089,7 @@ FIN se ponovo šalju ako se izgube. Svako gasi svoju stranu veze nakon slanja FI
 
 ## 41. Protokoli kliznih prozora na transportnom sloju 
 
-U sloju veze, ovi protokoli su se odnosili na prenos podataka kroz kabla između dva susedna čvora. U ovom slučaju omogućavaju prenos između krajnjih tačaka bilo gde na internetu.
+U sloju veze, ovi protokoli su se odnosili na prenos podataka kroz kabla između dva susedna čvora. U ovom slučaju omogućavaju prenos između krajnjih tačaka bilo gde na Internetu.
 
 Povećana pouzdanost na nižim nivoima doprinosti efikasnosti na višim nivoima, ali te mehanizme nije nužno imati na nižim. U ekstremnom slučaju, sve bi moglo da se radi na transportnom: kontrola toka, provera grešaka... Ovo bi bilo manje efikasno, zašto?
 
@@ -2150,7 +2185,7 @@ Dakle, mora se uzeti u obzir kolika je varijabilnost, tj. koliko oko trenda osci
 
 * TCP Timeout<sub>N</sub> = SRTT<sub>N</sub> + 4 * Svar<sub>N</sub>
 
-Procena trajanje pauze ima JAKO bitan uticaj na performanse interneta! Pogrešno procenjena pauza jedne strane bi uticala na sve ostale - po mreži bi se kretali paketi koji nikad nije ni trebalo da budu poslati.
+Procena trajanje pauze ima JAKO bitan uticaj na performanse Interneta! Pogrešno procenjena pauza jedne strane bi uticala na sve ostale - po mreži bi se kretali paketi koji nikad nije ni trebalo da budu poslati.
 
 ## 44. TCP, svojstva, realizacija kliznih prozora, uspostava i prekid veze (specifično)
 
@@ -2179,7 +2214,7 @@ Procena trajanje pauze ima JAKO bitan uticaj na performanse interneta! Pogrešno
 
 ## 45. Zagušenje na transportnom sloju, opis problema i mehanizam za rešavanje AIMD
 
-Zagušenje je problem na internetu koji se dešava i u prirodi, npr. saobraćaj, deadlockovi na raskrsnici, itd. Imamo bafere na ruterima i svičevima, ali oni ne pomažu ovom problemu toliko. U suštini, oni mogu samo delimično da odlože problem, ali će problem definitivno da se manifestuje ponovo čim se bafer napuni, koliki god da je. Baferi su tu za momentalne fluktuacije, npr.kada je velika varijansa, u nekim trenucima ćemo imati dosta saobraćaja - bafer se puni, a u nekim manje nego očekivano, tj. ispod trenda - bafer koji se napunio prethodno se prazni i podaci prolaze brzo.
+Zagušenje je problem na Internetu koji se dešava i u prirodi, npr. saobraćaj, deadlockovi na raskrsnici, itd. Imamo bafere na ruterima i svičevima, ali oni ne pomažu ovom problemu toliko. U suštini, oni mogu samo delimično da odlože problem, ali će problem definitivno da se manifestuje ponovo čim se bafer napuni, koliki god da je. Baferi su tu za momentalne fluktuacije, npr.kada je velika varijansa, u nekim trenucima ćemo imati dosta saobraćaja - bafer se puni, a u nekim manje nego očekivano, tj. ispod trenda - bafer koji se napunio prethodno se prazni i podaci prolaze brzo.
 
 Problem nastaje kada kontinuirano imamo trend koji je iznad kapaciteta, tj. dugoročna i srednjeročna stanja u kojima je ulazni saobraćaj veći od izlaznog saobraćaja. U ovom slučaju baferi se prepunjavaju i postaju besmisleni, kao dozvoljeni minus na minimalnoj vrednosti. Da bi se rešio problem zagušenja, mora se reagovati na drugačiji način, a to je da pošiljaoci ne šalju, tj. disciplinuju se. Zagušenja dakle rešavaju pošiljaoci na transportnom sloju i neophodno je da nekako oni budu svesni da je mreža zagušena kako bi redukovali slanje ili skroz prestali.
 
@@ -2225,3 +2260,307 @@ Binarni odgovori mreže - kako se dešavaju? Na koji način ruteri zaključuju d
 |Signal rutera|TCP sa eksplicitnim signalom zagušenja|Rano čuje, ali zahteva podršku rutera|
 
 Signali rutera mogu da budu opciono implementirani kao eksplicitna informacija, uz ostale implementacije ili bez (možda?), kao 100% informacija da se dešava zagušenje.
+
+# Aplikativni sloj
+
+## 46. Aplikativni sloj, uloga, interakcija sa slojem ispod, pregled Internet aplikacija
+
+### Uloga
+
+Sve što smo do sad naučili će biti indirektno korišćeno kako bi se na kraju postigla neka konačna funkcionalnost, a to je interakcija krajnjeg korisnika i računara.
+
+Aplikativni sloj je naslonjen na transportni sloj. Naziv za podatak na aplikativnom sloju je poruka, i ta poruka može imati različite formate i semantiku, npr. jedan konkretan format je mejl. 
+
+Protokoli aplikativnog sloja su često deo aplikacije (programa), nemaju nužno gui, primer za to je DNS.
+
+### Interakcija sa slojem ispod
+
+Aplikacijama su neophodne razne funkcionalnosti, i jedan deo zahtevnih ne postoji na transportnom sloju. Na transportnom sloju, kao što smo već pomenuli, postoje dva standardna protokola - TCP i UDP protokol. 
+
+* Primer za jednu generičnu aplikaciju je Web, tj. http protokol, i ona omogućava povezivanje web dokumenata i navigiranje kroz virtuelnu mrežu dokumenata i veza između njih. Ispostavlja se da je za to neophodan TCP protokol koji se nalazi ispod. 
+* DNS protokol - zadužen za preslikavanje domena imena i IP adresa (da ne bismo za svaki sajt pamtili IP). Zahteva veliku pouzdanost, a realizovan je preko nepouzdanog UDP protokola, pre svega zato što je TCP loša opcija za DNS zbog velikog footrpinta (propratne dodatne informacije i kontrolni saobraćaj).
+* Skype (kao predstavnik aplikacije koje se bave prenosom audio i video sadržaja) - realizuje se preko UDP, pouzdanost nije toliko bitna jer problemi sa par piksela ili prekid zvuka na milisekundu nisu toliko bitni.
+
+### Pregled internet aplikacija
+
+<p align="center"> <img alt="idk" width=600 src="resources/web_apps.png"/> </p>
+
+* Telnet -> ssh - Telnet je protokol za povezivanje dve udaljene lokacije, od sredine 90ih prelazi se na ssh koji je enkriptovan, dakle bezbedniji, bolji, konekcija ne može da se presretne, itd. Korišćenje Telneta danas se ne preporučuje.
+* File Transfer Protocol (FTP) - protokol za prenos fajlova...
+
+## DNS, uloga, raniji pristup, moderni pristup, TLD, slogovi
+
+### Uloga
+
+DNS preslikava imena u brojeve. Imena u ovom kontekstu su imena sajtova koja koristimo da im pristupimo. U praksi se umesto ime češće koristi termin domen. Glavno pitanje je kako organizujemo prostor imena - nije baš pametno da jedan računar sadrži sve te informacije i da svi pristupaju njemu. Rešenje koje se samo nameće kao najefikasnije je neki distribuiran sistem. Cilj je da se efikasno organizuje skup računara tako da kada neko pošalje upit za neki imenski domen kao odgovor će dobiti IP adresu koja mu odgovara. Cilj ovog sistema je implementacija preslikavanja, što nije jednostavno za realizaciju.
+
+### Raniji pristup
+
+Prva ideja koja bi svima pala na pamet je implementacija proste tabele (mape) i ubacivanje nje na neki računar kom svi šalju upit. To je ranije i bilo rešenje pre DNS-a - postojao je fajl HOSTS.TXT koji je sadržao tabelu svih preslikavanja na ARPANET-u koji su na dnevnoj bazi preuzimali svi čvorovi sa jednog centralnog. Imena su inicijalno bila nestruktuirana, a posle su postala hijerarhijska, npr. lcs.mit.edu. Tačka razdvaja nivo hijerarhije. Kako je ARPANET rastao tako je ovo postajalo sve teže i neefikasnije za upravljanje.
+
+* Imena su identifikatori resursa (kako se nešto zove?)
+* Adrese su lokatori resursa (gde se šta nalazi?)
+* Određivanje adrese (eng. name resolution) je preslikavanje imena na adresu
+
+### Moderni pristup 
+
+DNS (Domain Name System) - sistem (aplikacija) koja vrši preslikavanje imena u IP adresu (dakle ono što targetujemo je uređaj sa svojom IP adresom, ne konkretnu aplikaciju, ako nam treba aplikacija treba nam i port u celoj toj priči), npr: `www.uwa.edu.au -> 130.95.128.140`. Omogućava efikasnu realizaciju distribuiranja podataka na jednoj hijerarhiji računara.
+
+Ciljevi: efikasan i lak za upravljanje kada postoji veliki broj korisnika. Poželjno je držati tabelu u ram memoriji za brz odziv.
+
+Pristup:
+
+1. distribuirana tabela, hijerarhijski organizovana, da ne bi jedan jedini računar vršio uslugu i bivao preopterećen
+2. automatski protokol za povezivanje delova hijerarhije.
+
+Bilo je potrebno rasparčati hijerarhiju i najbolji način za to je postojanje manje ili više značajnih domena na konkretnom nivou hijerarhije. Tačka je početni (koreni) deo naziva svakog domena, ali većina pretraživača izostavlja prvu - umesto `http://www.matf.bg.ac.rs.` ide `http://www.matf.bg.ac.rs`. Da ne bude zabune: kažemo prvu jer ih čitamo sa desna na levo - zdesna ide najopštiji, stvari koje su bliže korenu hijerarhije su više desno.
+
+Hijerarhija izgleda kao drvo otprilike: 
+
+<p align="center"> <img alt="idk" width=600 src="resources/tree.png"/> </p>
+
+### TLD - top level domeni (krovna imena)
+
+* Održava organizacija ICANN (Internet Corp. for Assigned Names and Numbers) koja je započela sa radom 1998. godine, finansijski i politički interesi...
+* 22+ osnovna TLD: .com, .edu, .gov, .mil, .org, .net... kasnije su dodati i .aero, .museum, .xxx `- no joke ovo stoji na prezentaciji`
+* ~250 nacionalnih TLD: dvoslovni, npr. .au, neki pogodni su i komercijalizovani, npr. .tv (pripada Tuvalu), dovijanja: instagr.am (Armenia), goo.gl (Greenland)...(?)
+
+### Slogovi 
+
+`Šta su zone pročitati u sledećem pitanju.`
+
+Svaka zona sadrži podešavanja (slogove) koji pružaju:
+
+* Informacije o imenovanim računarima
+* Informacije vezane za slanje pošte
+* Informacije o parametrima
+
+|Tip sloga|Značenje|
+|---------|--------|
+|SOA|Razni parametri zone...|
+|A|IPv4 adrese imenovanih računara|
+|AAAA|IPv6 adrese imenovanih računara|
+|CNAME|Na koji računar se šalje www, ftp itd.|
+|MX|Imena računara koji se koriste za mejlove|
+|NS|Server imena za zonu|
+
+<p align="center"> <img alt="idk" width=400 src="resources/slogovi.png"/> </p>
+
+
+## 28. DNS, zone, opis mehanizma određivanja adresa
+
+### Zone
+
+Zona je neprekidno parče prostora imena. Delegiranje je podela na podzone radi lakše i efikasnije organizacije. 
+
+Distribuiranje nadležnosti - koji računar je nadležan za koji deo domena? Ponekad je dovoljno da jedan računar bude posvećen jednom konkretnom domenu, a neki domeni su pod prevelikim pritiskom pa postoje replicirani serveri koji se bave samo njim. Često se grupišu više delova domena u jedan ako pojedinačno nisu pod velikim pritiskom.
+
+DNS zone su celoviti delovi drveta koje možemo sa jednim celovitim regionom zaokružiti, to je bilo koji kontinuirani deo drveta:
+
+<p align="center"> <img alt="idk" width=600 src="resources/zones.png"/> </p>
+
+DNS može biti implementiran na više načina: reci mi šta ti treba i uputiću te na nekoga ko zna o tome ili evo ti ta konkretna informacija. Svaka zona ima nadležni server imena, koji zna kontakte za dlegiranje, odnosno servere imena za podzone.
+
+### Opis mehanizma određivanja adresa
+
+Neki računar (klijent) kontaktira DNS kako bi mu ovaj poslao IP adresu nekog drugog računara na Internetu. Ovaj proces se dešava npr. svaki put kada pristupamo nekom linku. Opšta ideja je da računar kontaktira svoj najbliži (lokalni) DNS, ako on ne zna traženo ime od ranije, započinje traženje sa korenih servera imena (edu, com...), pa se onda ide niže kroz hijerarhiju.
+
+Računar zna koji je njegov DNS tako što tu informaciju dobije kada mu se dodeli IP adresa, dakle u fazi DHCP-a.
+
+Primer:
+
+<p align="center"> <img alt="idk" width=600 src="resources/dns.png"/> </p>
+
+Kada pozivamo ovu flits.cs.vu.nl adresu, šaljemo našem lokalnom DNS serveru upit - imaš li ti ovu adresu? Moguće je da je on keširao informacije o tome, ali pretpostavimo da nije. U tom slučaju najpre pita root (u ovom slučaju nl) server (oni su vezani za onu prvu tačku u hijerarhiji). Root serveri su visoko replicirani serveri koji se nalaze na unapred poznatim lokacijama. Ti root serveri su solidno opterećeni (gađa ih ceo svet), tako da nemaju baš vremena da se bave rezolviranjem cele adrese. Ono što oni rade je da brzo iterativno saznavaju gde se nalazi edu domen, tj. njegovu IP adresu da bismo znali gde dalje da tražimo. Slično se dalje dešava za washington.edu, cs.washington.edu, pa onda na kraju i za robot.cs.washington.edu. 
+
+### Iterativni i rekurzivni DNS
+
+Implementacija na dva načina:
+
+1. Rekurzivni DNS - završava ceo posao za klijenta, nalazi IP adresu i vraća je klijentu. U prethodnom primeru to znači da lokalni DNS isporučuje klijentu traženu adresu. Smanjuje opterećenje onome ko zahteva informaciju i omogućava pamćenje (keširanje) za prethodne upite, što može poboljšati performanse na strani onoga ko pita. U prethodnom primeru rekurzivni je mogao biti bilo koji od ovih najdešnjih osim korenog, i to bi značilo da bi on isporučio IP adresu za ceo domen bez daljih preusmeravanja.
+2. Iterativni DNS - ako ne zna za ime, iterativni samo vraća reference na druge DNS-ove koji znaju odgovor (i ti referentni mogu biti iterativni ili rekurzivni). U prethodnom primeru je npr. lokalni bio rekurzivni (uglavnom je tako), koreni su uvek iterativni. Ne zahtevaju veliku memoriju, već samo pamćenje direktnih potomaka (servera imena nižeg nivoa). Jedini izbor ukoliko se DNS bombarduje zahtevima, kao što je slučaj kod korenih DNS servera.
+
+Dakle, na Internetu postoje i rekurzivni i iterativni DNS i međusobno se dopunjuju. 
+
+**Lokalni DNS server** je obično u vlasništvu firme ili ISP, ali mogu biti i na klijentu ili AP (pristupnoj tački). Postoje i javno dostupni, npr. Google javni DNS.
+
+**Koreni DNS** čini zapravo 13 servera - a.root-servers.net do m.root-servers.net. Njihove IP adrese su fiksirane u podešavanjima svih drugih DNS servera. Ima ih >250 repliciranih, vrlo su pouzdani i efikasni.
+
+### Keširanje
+
+Pamćenje informacija tako da postoji momentalan odgovor na upit bez daljeg istraživanja. Pretpostavimo da je neko preko Matf mreže pristupio nekom sajtu pre nas - ta adresa se negde keširala i mi ćemo dobiti momentalan odgovor na upit. Mogu se koristiti i informacije o delu imena, ako postoje.
+
+### DNS poruke
+
+Zahtevi i odgovori staju u jedan segment, koriste UDP i port 53, kao i ARQ za pouzdanost. Poruke se identifikuju 16-bitnom oznakom. Klijent se obraća jednom DNS serveru, pa ukoliko je on down, ide na neku od njegovih replika. To pomaže i u balansiranju protoka.
+
+## 49. HTTP protokol, preuzimanje Veb dokumenta
+
+### Veb/HTTP protokol
+
+Najbitniji i najkorišćeniji protokol za Internet. Opisuje način ostvarivanja komunikacije između dokumenata na Internetu koji su isprepovezani hiperlinkovima. Osnovni protokol za preuzimanje Internet dokumenata.
+
+Tačnije bi bilo WWW (ili samo Veb) dokumenti:
+
+* WWW – skup svih povezanih dokumenata – logički nivo
+* Internet se odnosi na skup povezanih mašina – fizički nivo
+
+`Istorijat je rekao u dve rečenice uz komentar "to već znate".`
+
+Veb (HTTP protokol) je baziran na pasivno-aktivnoj komunikaciji, gde su serveri u pasivnoj, a klijenti u aktivnoj. Klijenti šalju zahteve, a serveri odgovaraju na zahteve u vidu http dokumenta. Npr. ako želimo da pristupimo nekom konkretnom dokumentu na serveru, treba nam i njegova putanja, šaljemo GET/POST request, izvršava se rezolvovanje adrese (DNS) i dobijamo odgovor sa nekim statusom i sadržajem.
+
+HTTP koristi TCP i podrazumevano port 80. Koristi se i na strani klijenta i na strani servera.
+
+### Preuzimanje veb dokumenta
+
+Korisnik, npr. čovek, ukuca adresu Veb dokumenta http://en.wikipedia.org/wiki/Vegemite gde su:
+
+* http:// - protokol
+* en.wikipedia.org/ - ime pridruženo IP adresi
+* wiki/Vegemite - relativna putanja do dokumenta
+
+Koraci: 
+
+* Određivanje IP adrese
+* Uspostavljanje TCP veze sa serverom (mašinom na ciljnoj IP adresi)
+* Slanje HTTP zahteva za konkretnim dokumentom na serveru (GET/POST)
+* (Čekanje HTTP odgovora, status+sadržaj ili samo status) 
+* Izvršavanje ili preuzimanje ugrađenih dokumenata (slika, videa, ...) 
+* Gašenje TCP veze (ili veza)
+
+Komande koje se koriste pri formiranju zahteva:
+
+|Metoda|Opis|
+|------|----|
+|GET|Čita i vraća sadržaj Veb dokumenta|
+|HEAD|Čita zaglavlje Veb dokumenta|
+|POST|Dodaje podatke Veb dokumentu (???)|
+|PUT|Skladišti Veb dokument|
+|DELETE|Uklanja Veb dokument|
+|TRACE|Prikazuje dolazni zahtev|
+|CONNECT|Veza kroz proksi|
+|OPTIONS|Parametri zahteva|
+
+Kodovi koji se vraćaju kroz odgovor:
+
+|Metoda|Značenje|Primeri|
+|------|--------|-------|
+|1xx|Informacija|100 = server prihvata zahtev|
+|2xx|Uspeh|200 = zahtev uspeo|
+|3xx|Preusmerenje|301 = dokument pomeren|
+|4xx|Greška klijenta|403 = zabranjen pristup, 404 = nema dokumenta|
+|5xx|Greška servera|500 = interna logička greška|
+
+Dodatna zaglavlja zahteva ili odgovora:
+
+|Funkcija|Primeri zaglavlja|
+|--------|-----------------|
+|Info o pregledaču (klijent->server)|User-Agent, Accept, Accept-Charset, Accept-Encoding, Accept-Language|
+|Info o keširanju (oba smera)|If-Modified-Since, If-None-Match, Date, Last-Modified, Expires, Cache-Control, ETag|
+|Stanje pregledača (klijent->server)|Cookie, Referer, Authorization, Host|
+|Tip sadržaja (server->klijent)|Content-Encoding, Content-Length, Content-Type, Content-Language, Content-Range, Set-Cookie|
+
+## 50. HTTP performanse
+
+Kada smo preuzeli Veb dokument nismo završili ceo posao, potrebno je i da Veb pregledač preuzme sav sadržaj na koji taj dokument referiše.
+
+Statički Veb dokumenti su datoteke sa fiksnim sadržajem, npr. slika, video, statička html stranica, dok je dinamički Veb dokument datoteka dobijena kao rezultat izvršavanja programa - npr. html strana dobijena kao rezultat pretrage na Google.
+
+Postoje bolji i lošiji načini preuzimanja Veb stranice i bitno je koliko su korisnici zadovoljni samom tom stranicom. Jedinstvena metrika od koje nema bolje (jednostavno opisuje zadovoljstvo svakog korisnika vezano za rad nekog sajta) je vreme učitavanja dokumenta.
+
+### PLT (Page Load Time, vreme učitavanja dokumenta)
+
+Definiše se kao vreme proteklo od klika do učitavanja dokumenta, tj. dobijanja upotrebljive informacije sa tog sajta. Čak i malo povećanje PLT ima veliki uticaj na smanjenje zadovoljstva korisnika. Zavisi od mnogo faktora:
+
+* Struktura dokumenta
+* Verzije HTTP (i TCP!) protokola - npr. stara verzija protokola (HTTP/1.0) je koristila samo jednu TCP vezu da preuzme sve dokumente, što je bilo implementirano jednostavno, ali je imala jako loš PLT jer je morala da prekida i uspostavlja konekciju previše puta zbog sekvencijalnog izvršavanja.
+* Mrežnog protoka i RTT
+
+Načini za smanjenje PLT:
+
+1. Smanjivanje poslatog sadržaja: manje slike, gzip kompresija
+2. Prilagođavanje HTTP da bolje koristi protok
+3. Izbegavanje ponovnih istih HTTP zahteva - keširanje i Veb proksiji
+5. Pomeranje sadržaja da bude bliži korisniku
+
+### Paralelne TCP veze
+
+Jednostavan način za poboljšanje PLT. Pregledač npr. istovremeno radi sa 8 HTTP konteksta, svaki kontekst pravi odvojenu TCP vezu. Server ne zahteva promenu, samo klijent, odnosno pregledač. Sada 8 HTTP veza može bolje da iskoristi dostupni protok. Sve rade istovremeno, pa se ne gomilaju kašnjenja koja nastaju zbog uspostava TCP veza.
+
+### Trajne (višestruko upotrebljive) veze
+
+Umesto paralelnih TCP veza, može se koristiti i trajna (višestruko upotrebljiva) veza - napravi se jedna TCP veza za sve resurse ka jednom serveru i posle se deli među nezavisnim HTTP zahtevima ka tom serveru.
+
+## 51. HTTP keširanje i HTTP proksiji
+
+Keširanjem i koriščenjem proksija možemo značajno da pojačamo PLT tako što omogućavamo višestruke upotrebe istog sadržaja.
+
+### HTTP keširanje
+
+Vrlo jednostavan koncept - naš Veb pregledač ima neki direktorijum u kom čuva privremene fajlove koji ostaju na disku čak i nakon što se Veb pregledač ugasi. Cilj je brže dobijanje sadržaja. Problem sa ovim može da bude - šta ako nam pregledač pokazuje keširanu verziju nekog sajta, i mi ne vidimo na vreme neke bitne promene?
+
+HTTP keširanje je bazirano na uslovnom GET zahtevu - klijent šalje serveru informaciju da ima kopiju kod sebe na računaru zajedno sa datumom poslednje izmene sa upitom da li postoji nova verzija, i ako postoji server je šalje, a ako ne, vraća samo status. Dakle, kopija se smatra za ispravnu ako nije istekla.
+
+Moguća je i provera zasnovana na sadržaju upotrebom "Etag" zaglavlja - neki vid heš koda.
+
+### HTTP proksiji
+
+Vrlo slično HTTP keširanju, samo što to u ovom slučaju ne radi Veb pregledač (a ni naš računar), već uređaj ispred, npr. neki računar kroz koji prolazi naš sadržaj. Na Matfu to može biti glavni Poincare računar.
+
+Proksi je posrednik između grupe klijenata i veb servera. Različiti klijenti takođe mogu da koriste isti sadržaj tako da ima smisla keširati sadržaj i za grupu klijenata, a ne samo pojedinca. Dodatno, u proksi se mogu ugraditi i sigurnosni mehanizmi, zabrana sadržaja (cenzura) i slično... Korisno za kompanije, organizacije, ISP.
+
+## 52. CDN (Content Delivery Network)
+
+Efikasna isporuka često korišćenog sadržaja, smanjuje čekanje, smanjuje potrošnju ukupnog protoka. Ideja je postaviti popularan sadržaj bliže klijentima. Vrlo kompleksan sistem računara. 
+
+Pretpostavimo da šaljemo sadržaj od izvora ka 4 korisnika. Scenario bez CDN-a, ukupno 4x3 = 12 hopova:
+
+<p align="center"> <img alt="idk" width=600 src="resources/cdn1.png"/> </p>
+
+Scenario sa CDN-om, 4+2 = 6 hopova:
+
+<p align="center"> <img alt="idk" width=600 src="resources/cdn2.png"/> </p>
+
+Implementacija CDN-a je jako kompleksna, informacije se drže u RAM-u zbog brzog odziva. Ono što je ključna stvar kod ovog sistema je automatsko rasuđivanje gde će koja replika biti pozicionirana. Analiziraju se zahtevi korisnika i onda se sadržaj prebacuje sa računara na računar tako da zadovolji što veći broj korisnika. Svi poznati sajtovi (Google, Fb...) imaju svoje lične CDN sisteme. Ovo ima smisla samo za statički sadržaj, jer se dinamički menja kroz vreme.
+
+Postavljanje sadržaja blizu klijenata? 
+
+Prvi nivo je upotreba lokalno keširanja (pregledač) i keširanja na proksijima, što pomaže, ali je ograničeno na sadržaje koje učestalo koristi pojedinac ili grupa pojedinaca. Šta ako je sadržaj popularan na višem nivou, npr. slike sa socijalnih mreža, video spotovi itd? Onda kopije želimo da postavimo geografski ciljano. Ovo se može svesti na upotrebu DNS. DNS određivanje adrese može da dodeli različite odgovore različitim klijentima - svakom klijentu se daje IP adresa najbliže kopije.
+
+## 53. P2P
+
+P2P model isporuke sadržaja – alternativa za CDN na neki način. Imamo gomilu računara i procesa na njima koji čine mrežu peer-ova. Cilj je isporuka sadržaja bez centralizovanih mehanizama.
+
+`Kartelj: funkcionalno gledano, ovde je cilj piraterija, ljudi žele da poseduju sadržaj, ali ne i da imaju odgovornost za njega.Dakle, cilj je legalno se otarasiti odgovornosti za kršenje autorskih prava.`
+
+* Nema centralnih, bitnijih čvorova - svako je i klijent i server (isporučuje i dobavlja sadržaj)
+* Svi čvorovi su ravnopravni
+* BitTorrent je primer realizacije ovakvog tipa sistema
+
+P2P se ponaša efikasno i sa povećanjem broja čvorova. Može se postići i visoka pouzdanost. Ključna ideja je da čvorovi pomažu jedni drugima:
+
+* Inicijalno sistem Napster 1999. godine za deljenje muzičkih sadržaja - ugašen zbog toga što je imao centralizovani spisak sadržaja
+* Od 2001. BitTorrent – nema deljeni registar sadržaja, pa se ne može optužiti pojedinac
+
+Izazovi:
+
+* P2P nema servera na koji se može osloniti - komunikacija između čvorova mora da bude samoodrživa i distribuirana. Postoje izazovi pri povećanju broja čvorova.
+* Podsticaj za učešće čvora - zašto bi čvorovi pomagali jedni drugima? Rešenje: "Ja ću poslati ako ti pošalješ meni", tj. dobiješ koliko si pružio
+* Decentralizacija - kako se pronalazi sadržaj bez centralnog registra (indeksa)? Rešenje: distribuirane heš tabele - DHT (Distributed Hash Tables). DHT koriste algoritme za rad sa distribuiranim indeksom - indeks je distribuiran preko svih čvorova, indeks za traženi sadržaj daje spisak svih čvorova koji ga sadrže, i svaki čvor ima pristup indeksu.
+
+### BitTorrent
+
+Standardni P2P sistem koji se danas koristi.
+
+* Veoma brz rast, mogućnost prenosa velikih datoteka
+* Čini veliki deo Internet saobraćaja danas
+* Koristi se za legalni i ilegalni sadržaj
+* Dostavljanje podataka posredstvom "torenata": .torrent datoteka sadrži meta podatke, poput spiska datoteka, veličine...
+* Sadržaj se šalje u delovima zbog paralelizma 
+* Ne uzimaju se svi delovi redom, zašto?
+* Spisak čvorova ne mora biti u DHT, može biti i naveden na tzv. Tracker serverima – računarima čija je namena da pamte spiskove čvorova koji poseduju određenu datoteku (danas se sve manje koriste zbog pojave DHT)
+
+Koraci u radu protokola:
+1. Započinje sa sa torrent datotekom - u njoj su ili lokacija Tracker servera ili informacije potrebne da bi se kontaktirao DHT. 
+2. Razmena podataka sa različitim čvorovima - imam delove sadržaja koji treba drugima, drugi imaju delove sadržaja koji treba meni. Sve ono što polako preuzimamo od drugih takođe i delimo drugima. Ne dobijamo podatke redom, već nasumične parčiće koji se na kraju spajaju.
+3. Trgovina - što više delova šaljem, više i dobijam? Odlazni saobraćaj prema nekom čvoru će pratiti dolazni saobraćaj sa njega.
