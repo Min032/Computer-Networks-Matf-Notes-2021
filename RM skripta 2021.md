@@ -4,7 +4,7 @@ Jul 2021.
 
 Skripta je pisana na osnovu snimaka predavanja prof. dr Aleksandra Kartelja i prezentacija.
 
-Hvala kolegama za napomene, ispravke i doprinos:
+Hvala kolegama i koleginicama za napomene, ispravke i doprinos:
 - Darinka Zobenica
 - Filip Filipović
 - Teodora Nićković
